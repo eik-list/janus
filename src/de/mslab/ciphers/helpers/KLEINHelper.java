@@ -19,19 +19,16 @@ public abstract class KLEINHelper extends AbstractCipherHelper {
 		if (toRound == numRounds) {
 			keyDifference = keyDifferential.getKeyDifference(toRound + 1).getDelta();
 			sum += countActiveKeyNibblesInSBox(keyDifference);
-			logger.info("key   round {0} sum {1}", toRound + 1, sum);
 		}
 		
 		for (int round = fromRound; round <= toRound; round++) {
 			stateDifference = stateDifferential.getIntermediateStateDifference(round).getDelta();
 			sum += stateDifference.countNumActiveNibbles();
-			logger.info("state round {0} sum {1}", round, sum);
 		}
 		
 		for (int round = fromRound; round <= toRound; round++) {
 			keyDifference = keyDifferential.getKeyDifference(round).getDelta();
 			sum += countActiveKeyNibblesInSBox(keyDifference);
-			logger.info("key   round {0} sum {1}", round, sum);
 		}
 		
 		return sum;

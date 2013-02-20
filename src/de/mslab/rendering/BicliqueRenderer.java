@@ -29,12 +29,13 @@ public class BicliqueRenderer {
 	private static final BaseColor backwardDifferentialActiveBytesColor = new BaseColor(0x2B, 0x6D, 0xAA); 
 	
 	private static final int numDifferentials = 3;
-	private static final int padding = 50;
 	
 	private DifferentialRenderer differentialRenderer;
 	private com.itextpdf.awt.geom.Rectangle differentialBounds;
 	private Document document;
 	private FileOutputStream fileOutputStream;
+
+	private static int padding = 50;
 	private PdfWriter writer;
 	private PdfContentByte contentByte;
 	private Rectangle pageSize;
@@ -45,6 +46,20 @@ public class BicliqueRenderer {
 	
 	public DifferentialRenderer getDifferentialRenderer() {
 		return differentialRenderer;
+	}
+	
+	/**
+	 * Returns the padding in pixels from top and left to the leftmost differential. 
+	 */
+	public static int getPadding() {
+		return padding;
+	}
+	
+	/**
+	 * Sets the padding in pixels.
+	 */
+	public static void setPadding(int padding) {
+		BicliqueRenderer.padding = padding;
 	}
 	
 	public void setDifferentialRenderer(DifferentialRenderer differentialRenderer) {
@@ -84,7 +99,7 @@ public class BicliqueRenderer {
 		differentialRenderer.setContentByte(contentByte);
 		
 		Point position = new Point(differentialBounds.x - padding, document.getPageSize().getHeight() - padding);
-		Differential emptyDifferential = createEmptyDifferential(biclique.deltaDifferential);
+		Differential emptyDifferential = createEmptyDifferential(biclique.deltaDifferential, cipher);
 		differentialRenderer.renderDifferential(
 			emptyDifferential, position, BASE_COMPUTATION_LABEL, simpleDifferentialActiveBytesColor, simpleDifferentialActiveBytesColor
 		);
@@ -135,7 +150,7 @@ public class BicliqueRenderer {
 		}
 	}
 	
-	private Differential createEmptyDifferential(Differential differential) {
+	private Differential createEmptyDifferential(Differential differential, RoundBasedBlockCipher cipher) {
 		Differential emptyDifferential = new Differential(differential.fromRound, differential.toRound);
 		Difference difference = clear(differential.getStateDifference(differential.fromRound - 1));
 		emptyDifferential.setStateDifference(differential.fromRound - 1, difference);
@@ -143,6 +158,15 @@ public class BicliqueRenderer {
 		for (int round = differential.fromRound - 1; round <= differential.toRound; round++) {
 			difference = clear(differential.getStateDifference(round));
 			emptyDifferential.setStateDifference(round, difference);
+			difference = clear(differential.getIntermediateStateDifference(round));
+			emptyDifferential.setIntermediateStateDifference(round, difference);
+			difference = clear(differential.getKeyDifference(round));
+			emptyDifferential.setKeyDifference(round, difference);
+		}
+		
+		if (differential.toRound == cipher.getNumRounds()
+			&& cipher.hasKeyInjectionInRound(differential.toRound + 1)) {
+			int round = differential.toRound + 1;
 			difference = clear(differential.getIntermediateStateDifference(round));
 			emptyDifferential.setIntermediateStateDifference(round, difference);
 			difference = clear(differential.getKeyDifference(round));

@@ -97,7 +97,7 @@ abstract class AbstractDifferentialRenderer implements DifferentialRenderer {
 			result.y += boundsY + 2 * offset; // space for state
 		}
 		
-		result.x = 2 * boundsX + 2 * offset; // space for state + key
+		result.x = 2 * boundsX + offset; // space for state + key
 		return result;
 	}
 	

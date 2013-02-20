@@ -3,10 +3,12 @@ package de.mslab.diffbuilder;
 import de.mslab.ciphers.RoundBasedBlockCipher;
 import de.mslab.core.ByteArray;
 import de.mslab.core.Differential;
+import de.mslab.utils.Logger;
 
 public class BicliqueDifferentialBuilder {
 	
 	public RoundBasedBlockCipher cipher;
+	private Logger logger = Logger.getLogger();
 	
 	public BicliqueDifferentialBuilder() {
 		
@@ -85,7 +87,7 @@ public class BicliqueDifferentialBuilder {
 		ByteArray state = startingState.clone();
 		int fromRound = differential.fromRound;
 		int toRound = differential.toRound;
-
+		
 		if (toRound == cipher.getNumRounds() && cipher.hasKeyInjectionInRound(toRound + 1)) {
 			key = cipher.getRoundKey(toRound + 1);
 			differential.setKeyDifference(toRound + 1, key);
@@ -118,7 +120,7 @@ public class BicliqueDifferentialBuilder {
 			storeIntermediateState(differential, state, key, 0);
 		}
 	}
-
+	
 	private void computeForward(Differential differential, ByteArray startingState) {
 		ByteArray key = null;
 		ByteArray state = startingState.clone();

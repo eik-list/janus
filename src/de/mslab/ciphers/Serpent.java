@@ -307,6 +307,7 @@ public class Serpent extends AbstractRoundBasedBlockCipher {
 	public void setExpandedKey(ByteArray expandedKey) {
 		checkExpandedKeySize(expandedKey.length());
 		secretKey = expandedKey.clone();
+		internalExpandedKey = secretKey.readUInts();
 	}
 	
 	private void addRoundKeyWords(int round, int[] state) {

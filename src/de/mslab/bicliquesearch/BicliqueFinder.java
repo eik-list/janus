@@ -467,8 +467,6 @@ public class BicliqueFinder {
 					context.fromRound, context.toRound, keyDifferencesIterator, initialKey
 				);
 				
-				// logger.info(nablaDifferential);
-				
 				for (int i = 0; i < numDeltaDifferentials; i++) {
 					deltaDifferential = deltaDifferentials.get(i);
 					
