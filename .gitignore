@@ -1,0 +1,12 @@
+/.svn
+/.svn/*
+/.settings
+/.settings/*
+/.classpath
+/.classpath/*
+.project
+/results
+/bin
+/deploy
+/doc
+/doc/*
