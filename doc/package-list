@@ -1,0 +1,13 @@
+de.mslab.applications
+de.mslab.benchmarks
+de.mslab.bicliquesearch
+de.mslab.ciphers
+de.mslab.ciphers.helpers
+de.mslab.ciphers.tables
+de.mslab.core
+de.mslab.diffbuilder
+de.mslab.errors
+de.mslab.hashes
+de.mslab.matching
+de.mslab.rendering
+de.mslab.utils
