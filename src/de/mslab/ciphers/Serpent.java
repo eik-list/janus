@@ -579,7 +579,7 @@ public class Serpent extends AbstractRoundBasedBlockCipher {
 		x[0] = Integer.rotateLeft(x[0], 13);
 		x[2] = Integer.rotateLeft(x[2], 3);
 		x[1] = x[1] ^ x[0] ^ x[2];
-		x[3] = x[3] ^ x[2] ^ (x[0]) << 3;
+		x[3] = x[3] ^ x[2] ^ (x[0] << 3);
 		x[1] = Integer.rotateLeft(x[1], 1);
 		x[3] = Integer.rotateLeft(x[3], 7);
 		x[0] = x[0] ^ x[1] ^ x[3];

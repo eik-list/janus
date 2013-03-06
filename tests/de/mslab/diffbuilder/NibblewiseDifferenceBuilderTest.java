@@ -36,7 +36,6 @@ public class NibblewiseDifferenceBuilderTest {
 		
 		long expectedNumResults = MathUtil.computeBinomialCoefficient(2 * numBytes, numActiveNibbles);
 		long numResults = builder.initializeAndGetNumDifferences(dimension, numBytes);
-		logger.info("numResults: {0}", numResults);
 		assertEquals(expectedNumResults, numResults);
 		
 		DifferenceIterator iterator = null;
@@ -44,6 +43,7 @@ public class NibblewiseDifferenceBuilderTest {
 		
 		for (int i = 0; i != numResults; i++) {
 			iterator = builder.next();
+			logger.info("i: {0}", i);
 			
 			while(iterator.hasNext()) {
 				difference = iterator.next();

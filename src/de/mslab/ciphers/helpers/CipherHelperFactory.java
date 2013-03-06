@@ -36,6 +36,10 @@ public class CipherHelperFactory {
 			case LED112: return new LEDHelper();
 			case LED128: return new LEDHelper();
 			
+			case MCRYPTON64: return new MCryptonHelper();
+			case MCRYPTON96: return new MCryptonHelper();
+			case MCRYPTON128: return new MCryptonHelper();
+			
 			case PRESENT80: return new PRESENTHelper();
 			case PRESENT128: return new PRESENTHelper();
 			case PRINCE: return new PRINCECoreHelper();

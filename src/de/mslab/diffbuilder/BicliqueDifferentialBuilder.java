@@ -76,9 +76,12 @@ public class BicliqueDifferentialBuilder {
 			
 			current.xor(first);
 			accumulated.or(current);
+			logger.info(current);
+			break;
 		}
 		
 		accumulated.secondSecretKey = secondExpandedKey.splice(0, cipher.getKeySize());
+		logger.info(accumulated);
 		return accumulated;
 	}
 	

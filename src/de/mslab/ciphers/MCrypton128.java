@@ -3,7 +3,7 @@ package de.mslab.ciphers;
 import de.mslab.core.ByteArray;
 
 public class MCrypton128 extends MCrypton {
-
+	
 	private static final String NAME = "mCrypton128";
 	public static final int NUM_BYTES_IN_128_BIT = 128 / Byte.SIZE;
 	

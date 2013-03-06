@@ -13,7 +13,7 @@ import de.mslab.utils.GaloisField;
  * Generates tables for multiplication in the Galois Field for the AES.  
  */
 public class AESTablesGenerator extends CipherTablesGeneratorBase {
-
+	
 	private static GaloisField field;
 	
 	// x^8 + x^4 + x^3 + x + 1
