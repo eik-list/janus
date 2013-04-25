@@ -8,7 +8,7 @@ abstract class KLEIN extends AbstractRoundBasedBlockCipher {
 	
 	public static final int NUM_BYTES_IN_64_BIT = 64 / Byte.SIZE;
 	
-	private static final short[] SBOX = { 0x7,0x4,0xA,0x9,0x1,0xF,0xB,0x0,0xC,0x3,0x2,0x6,0x8,0xE,0xD,0x5 };
+	protected static final short[] SBOX = { 0x7,0x4,0xA,0x9,0x1,0xF,0xB,0x0,0xC,0x3,0x2,0x6,0x8,0xE,0xD,0x5 };
 	private static final int[] X_TIMES_2 = {0x00, 0x02, 0x04, 0x06, 0x08, 0x0a, 0x0c, 0x0e, 0x10, 0x12, 0x14, 0x16,
 		0x18, 0x1a, 0x1c, 0x1e, 0x20, 0x22, 0x24, 0x26, 0x28, 0x2a, 0x2c, 0x2e, 0x30, 0x32, 0x34, 0x36, 0x38, 0x3a, 0x3c,
 		0x3e, 0x40, 0x42, 0x44, 0x46, 0x48, 0x4a, 0x4c, 0x4e, 0x50, 0x52, 0x54, 0x56, 0x58, 0x5a, 0x5c, 0x5e, 0x60, 0x62,
@@ -304,7 +304,7 @@ abstract class KLEIN extends AbstractRoundBasedBlockCipher {
 		roundKey.set(to - 1, temp);
 	}
 
-	private ByteArray invertMixNibbles(ByteArray state) {
+	protected ByteArray invertMixNibbles(ByteArray state) {
 		ByteArray newState = new ByteArray(state.length());
 		newState.set(0, X_TIMES_E[state.get(0)] ^ X_TIMES_B[state.get(1)] ^ X_TIMES_D[state.get(2)] ^ X_TIMES_9[state.get(3)]);
 		newState.set(1, X_TIMES_9[state.get(0)] ^ X_TIMES_E[state.get(1)] ^ X_TIMES_B[state.get(2)] ^ X_TIMES_D[state.get(3)]);
@@ -331,7 +331,7 @@ abstract class KLEIN extends AbstractRoundBasedBlockCipher {
 		return state;
 	}
 	
-	private ByteArray mixNibbles(ByteArray state) {
+	protected ByteArray mixNibbles(ByteArray state) {
 		ByteArray newState = new ByteArray(state.length());
 		newState.set(0, X_TIMES_2[state.get(0)] ^ X_TIMES_3[state.get(1)] ^ state.get(2) ^ state.get(3));
 		newState.set(1, X_TIMES_2[state.get(1)] ^ X_TIMES_3[state.get(2)] ^ state.get(3) ^ state.get(0));

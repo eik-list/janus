@@ -20,9 +20,13 @@ public abstract class AbstractDifferenceIterator implements DifferenceIterator {
 		init(difference, dimension);
 		this.activePositions = cleanActivePositions(activePositions);
 	}
+
+	public boolean hasNext() {
+		return index < maximum;
+	}
 	
 	public ByteArray next() {
-		if (index < maximum) {
+		if (hasNext()) {
 			updateDifference();
 			return difference;
 		} else {
@@ -30,8 +34,8 @@ public abstract class AbstractDifferenceIterator implements DifferenceIterator {
 		}
 	}
 	
-	public boolean hasNext() {
-		return index < maximum;
+	public void reset() {
+		this.index = 0;
 	}
 	
 	protected void init(ByteArray difference, int dimension) {

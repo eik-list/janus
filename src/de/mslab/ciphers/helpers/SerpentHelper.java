@@ -8,7 +8,7 @@ public class SerpentHelper extends AbstractCipherHelper {
 	
 	private static final int LAST_BIT = 1;
 	
-	public int countActiveComponents(Differential stateDifferential, Differential keyDifferential) {
+	public int countRecomputedOperations(Differential stateDifferential, Differential keyDifferential) {
 		ByteArray intermediateStateDifference;
 		int sum = 0;
 		int fromRound = stateDifferential.fromRound;

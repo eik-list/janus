@@ -4,8 +4,8 @@ import de.mslab.core.Differential;
 
 abstract class AbstractCipherHelper implements CipherHelper {
 	
-	public int countActiveComponents(Differential differential) {
-		return countActiveComponents(differential, differential);
+	public int countRecomputedOperations(Differential differential) {
+		return countRecomputedOperations(differential, differential);
 	}
 	
 	protected boolean checkKey(int round, Differential deltaDifferential, Differential nablaDifferential) {

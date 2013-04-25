@@ -19,6 +19,9 @@ public class NibblewiseDifferenceIterator extends AbstractDifferenceIterator {
 			difference.setNibble(activePositions[i], (short)((index >>> shift) & mask));
 			shift += Nibble.SIZE;
 		}
+		
+		//Logger.getLogger().info("{3} difference {0}, index {1} activePositions {2}", difference, index, 
+		//	Arrays.toString(activePositions), ID);
 	}
 	
 }

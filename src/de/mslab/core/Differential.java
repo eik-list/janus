@@ -17,7 +17,7 @@ public class Differential implements Externalizable {
 	
 	@XmlAttribute
 	/**
-	 * The start round of the differential. The default value is <code>0</code>.
+	 * latThe start round of the differential. The default value is <code>0</code>.align
 	 */
 	public int fromRound = 0;
 	@XmlAttribute
@@ -49,6 +49,8 @@ public class Differential implements Externalizable {
 	 * The first secretKey used for creation of this differential.
 	 */
 	public ByteArray firstSecretKey;
+	@XmlElement
+	public ByteArray keyDifference;
 	@XmlElement
 	/**
 	 * The second secretKey used for creation of this differential.
@@ -329,8 +331,10 @@ public class Differential implements Externalizable {
 		
 		this.firstSecretKey = new ByteArray();
 		this.secondSecretKey = new ByteArray();
+		this.keyDifference = new ByteArray();
 		this.firstSecretKey.readExternal(input);
 		this.secondSecretKey.readExternal(input);
+		this.keyDifference.readExternal(input);
 		
 		this.intermediateStateDifferences = readVector(input);
 		this.keyDifferences = readVector(input);
@@ -362,6 +366,7 @@ public class Differential implements Externalizable {
 		
 		writeByteArray(this.firstSecretKey, output);
 		writeByteArray(this.secondSecretKey, output);
+		writeByteArray(this.keyDifference, output);
 		
 		writeVector(this.intermediateStateDifferences, output);
 		writeVector(this.keyDifferences, output);

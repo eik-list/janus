@@ -106,4 +106,20 @@ public class KLEIN64Test extends AbstractCipherTest {
 		}
 	}
 	
+	@Test
+	public void testEncryptionSpeed() {
+		long numIterations = 1000000;
+		ByteArray block = new ByteArray(8);
+		cipher.setKey(block);
+		long start = System.nanoTime();
+		
+		for (int i = 0; i < numIterations; i++) {
+			block = cipher.encrypt(block);
+		}
+		
+		long end = System.nanoTime();
+		double time = ((double)(end - start) / 1000.0) / (double)numIterations;
+		logger.info("time per 1,000,000 encryptions: {0}s", time);
+	}
+	
 }

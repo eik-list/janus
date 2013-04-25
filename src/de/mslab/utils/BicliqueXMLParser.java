@@ -62,6 +62,7 @@ public class BicliqueXMLParser {
 		Differential result = new Differential(differential.fromRound, differential.toRound);
 		result.firstSecretKey = differential.firstSecretKey;
 		result.secondSecretKey = differential.secondSecretKey;
+		result.keyDifference = differential.keyDifference;
 		
 		if (fromRound == 1 && cipher.hasKeyInjectionInRound(0)) {
 			result.setKeyDifference(0, differential.getKeyDifference(keyIndex));

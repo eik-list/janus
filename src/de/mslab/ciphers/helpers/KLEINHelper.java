@@ -10,7 +10,7 @@ public abstract class KLEINHelper extends AbstractCipherHelper {
 	protected int numRounds;
 	protected Logger logger = Logger.getLogger();
 	
-	public int countActiveComponents(Differential stateDifferential, Differential keyDifferential) {
+	public int countRecomputedOperations(Differential stateDifferential, Differential keyDifferential) {
 		ByteArray stateDifference, keyDifference;
 		int sum = 0;
 		int fromRound = stateDifferential.fromRound;

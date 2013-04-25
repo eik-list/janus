@@ -10,7 +10,7 @@ import com.itextpdf.text.DocumentException;
 import de.mslab.ciphers.AES128;
 import de.mslab.ciphers.RoundBasedBlockCipher;
 import de.mslab.ciphers.helpers.AES128Helper;
-import de.mslab.ciphers.helpers.DifferentialActiveComponentsCounter;
+import de.mslab.ciphers.helpers.RecomputedOperationsCounter;
 import de.mslab.core.Biclique;
 import de.mslab.matching.MatchingContext;
 import de.mslab.matching.MatchingDifferentialBuilder;
@@ -23,7 +23,7 @@ public class MatchingBenchmarkTest {
 	
 	private Biclique biclique;
 	private RoundBasedBlockCipher cipher;
-	private DifferentialActiveComponentsCounter counter;
+	private RecomputedOperationsCounter counter;
 	private Logger logger = Logger.getLogger();
 	private MatchingDifferentialBuilder matchingDifferentialBuilder;
 	

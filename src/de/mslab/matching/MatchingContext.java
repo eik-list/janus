@@ -1,8 +1,9 @@
 package de.mslab.matching;
 
 import de.mslab.ciphers.RoundBasedBlockCipher;
-import de.mslab.ciphers.helpers.DifferentialActiveComponentsCounter;
+import de.mslab.ciphers.helpers.RecomputedOperationsCounter;
 import de.mslab.core.Biclique;
+import de.mslab.core.ByteArray;
 
 /**
  * Context, which bundles the parameters for the MatchingDifferentialBuilder.
@@ -22,15 +23,15 @@ public class MatchingContext {
 	/**
 	 * Counts the number of active components in non-linear operations during the matching. 
 	 */
-	public DifferentialActiveComponentsCounter counter;
-	/**
-	 * Used if the isMatchingFixed is set to true.
-	 */
-	public int activeMatchingByte = -1;
+	public RecomputedOperationsCounter counter;
 	/**
 	 * Used if the isMatchingFixed is set to true.
 	 */
 	public int matchingRound = -1;
+	/**
+	 * Used if the isMatchingFixed is set to true.
+	 */
+	public ByteArray matchingStateDifference;
 	/**
 	 * By default, the MatchingDifferentialBuilder iterates over all values for matching rounds and 
 	 * bytes in the cipher state for partial matching in order to find a matching with minimal number
@@ -57,34 +58,34 @@ public class MatchingContext {
 	public int matchingToRound = -1;
 	/**
 	 * The class MatchingDifferentialBuilder can create the differentials in the matching phases 
-	 * in multiple iteratios with randomized key differences each. As a consequence,   
+	 * in multiple iterations with randomized key differences each.   
 	 */
-	public int numIterations = 8;
+	public int numIterations = 50;
 	/**
 	 * Set this value to influence the number of bytes, which are used at the matching state for a partial 
 	 * matching. The more bytes are used, the more components may need to be recomputed. 
 	 * Thus, the more bytes are used, the higher the computational complexity.  
 	 */
-	public int numMatchingBytesUsed = 1;
+	public int numMatchingBitsUsed = Byte.SIZE;
 	/**
 	 * The current iteration of the MatchingDifferentialBuilder.
 	 */
 	protected int iteration;
 	
 	public MatchingContext(Biclique biclique, RoundBasedBlockCipher cipher,
-		DifferentialActiveComponentsCounter counter) {
+		RecomputedOperationsCounter counter) {
 		this.biclique = biclique;
 		this.cipher = cipher;
 		this.counter = counter;
 	}
 	
 	public MatchingContext(Biclique biclique, RoundBasedBlockCipher cipher,
-		DifferentialActiveComponentsCounter counter, int matchingRound, int activeMatchingByte) {
+		RecomputedOperationsCounter counter, int matchingRound, ByteArray matchingStateDifference) {
 		this.biclique = biclique;
 		this.cipher = cipher;
 		this.counter = counter;
 		this.matchingRound = matchingRound;
-		this.activeMatchingByte = activeMatchingByte;
+		this.matchingStateDifference = matchingStateDifference;
 	}
 	
 }

@@ -76,19 +76,6 @@ public class DifferentialBuilder {
 	
 	/**
 	 * Used by the MatchingDifferentialBuilder to compute differentials in the matching phase:
-	 * p <- v (different vs, same expanded key)
-	 * Backward differential (fromround <- toround) : secondstate, expandedkey
-	 */
-	public synchronized Differential computeBackwardDifferentialFromMiddle(int fromRound, int toRound, 
-		ByteArray firstStartingState, ByteArray secondStartingState, ByteArray expandedKey) {
-		
-		return computeBackwardDifferential(
-			fromRound, toRound, firstStartingState, secondStartingState, expandedKey, expandedKey
-		);
-	}
-	
-	/**
-	 * Used by the MatchingDifferentialBuilder to compute differentials in the matching phase:
 	 * v <- s (same s, different expanded keys)
 	 * Backward differential (fromround <- toround) : firstexpandedkey, secondexpandedkey
 	 */
@@ -98,8 +85,10 @@ public class DifferentialBuilder {
 		
 		Differential differential = new Differential(fromRound, toRound);
 		initializeDifferential(differential, cipher.getStateSize(), cipher.getKeySize());
+		
 		cipher.setExpandedKey(firstExpandedKey);
 		computeBackward(differential, firstStartingState);
+		
 		cipher.setExpandedKey(secondExpandedKey);
 		computeBackward(differential, secondStartingState);
 		return differential;
@@ -170,29 +159,19 @@ public class DifferentialBuilder {
 	
 	/**
 	 * Used by the MatchingDifferentialBuilder to compute differentials in the matching phase:
-	 * v -> s (different vs, same expanded key)
-	 * Forward differential (fromround -> toround) : secondstate, expandedkey
-	 */
-	public synchronized Differential computeForwardDifferentialFromMiddle(int fromRound, int toRound, 
-		ByteArray firstStartingState, ByteArray secondStartingState, ByteArray expandedKey) {
-		
-		return computeForwardDifferential(
-			fromRound, toRound, firstStartingState, secondStartingState, expandedKey, expandedKey
-		);
-	}
-	
-	/**
-	 * Used by the MatchingDifferentialBuilder to compute differentials in the matching phase:
 	 * p -> v (same p, different expanded keys)
 	 * Forward differential (fromround -> toround) : firstexpandedkey, secondexpandedkey
 	 */
 	public synchronized Differential computeForwardDifferential(int fromRound, int toRound, 
-		ByteArray firstStartingState, ByteArray secondStartingState, ByteArray firstExpandedKey, ByteArray secondExpandedKey) {
+		ByteArray firstStartingState, ByteArray secondStartingState, 
+		ByteArray firstExpandedKey, ByteArray secondExpandedKey) {
 		
 		Differential differential = new Differential(fromRound, toRound);
 		initializeDifferential(differential, cipher.getStateSize(), cipher.getKeySize());
+		
 		cipher.setExpandedKey(firstExpandedKey);
 		computeForward(differential, firstStartingState);
+		
 		cipher.setExpandedKey(secondExpandedKey);
 		computeForward(differential, secondStartingState);
 		return differential;

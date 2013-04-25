@@ -8,20 +8,20 @@ import de.mslab.core.Differential;
  * depending on the cipher and where non-linear operations occur in the round functions.
  * 
  */
-public interface DifferentialActiveComponentsCounter {
+public interface RecomputedOperationsCounter {
 	/**
-	 * Counts the number of components which need recomputation in a differential 
+	 * Counts the number of operations which need recomputation in a differential 
 	 * using a matching-with-precomputations part.
 	 * @param differential The target differential.
-	 * @return The number of components which need recomputation.
+	 * @return The number of operations which need recomputation.
 	 */
-	int countActiveComponents(Differential differential);
+	int countRecomputedOperations(Differential differential);
 	/**
-	 * Counts the number of components which need recomputation in a matching-with-precomputations part 
+	 * Counts the number of operations which need recomputation in a matching-with-precomputations part 
 	 * of an independent-biclique attack.
 	 * @param stateDifferential A differential, in which only the states should be considered.
 	 * @param keyDifferential A differential, in which only the round keys should be considered.
-	 * @return The number of components which need recomputation.
+	 * @return The number of operations which need recomputation.
 	 */
-	int countActiveComponents(Differential stateDifferential, Differential keyDifferential);
+	int countRecomputedOperations(Differential stateDifferential, Differential keyDifferential);
 }

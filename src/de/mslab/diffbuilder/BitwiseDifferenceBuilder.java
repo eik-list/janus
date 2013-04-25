@@ -70,7 +70,7 @@ public class BitwiseDifferenceBuilder extends AbstractDifferenceBuilder {
 	public void setNumResults(long numResults) {
 		this.numResults = numResults;
 	}
-
+	
 	protected void setValueAtPosition(int position, boolean v) {
 		value.setBitAtEnd(position, v);
 	}

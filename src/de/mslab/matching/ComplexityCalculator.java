@@ -28,8 +28,8 @@ public class ComplexityCalculator {
 		ComplexityCalculationResult result = new ComplexityCalculationResult();
 		
 		result.decryptionsComplexity = determineDecryptionsComplexity(dimension); // 2^{8}
-		result.precomputationsComplexity = determinePrecomputationsComplexity(dimension, numBicliqueRounds); // 2^{7.485}
-		result.bicliqueComplexity = determineBicliqueComplexity(dimension, numBicliqueRounds); // 2^{7.26}
+		result.precomputationsComplexity = determinePrecomputationsComplexity(dimension, numBicliqueRounds, numMatchingRounds); // 2^{7.485}
+		result.bicliqueComplexity = determineBicliqueComplexity(dimension, numBicliqueRounds, numMatchingRounds); // 2^{7.26}
 		result.recomputationsComplexity = determineRecomputationsComplexity(cipher, dimension, numActiveBytesInMatching, numMatchingRounds + numBicliqueRounds); // 2^{14.14}
 		result.falsePosComplexityLog = determineFalsePositiveComplexityLog(dimension, 1);
 		
@@ -38,7 +38,7 @@ public class ComplexityCalculator {
 		result.precomputationsComplexityLog = MathUtil.log2(result.precomputationsComplexity); // 7.485
 		result.recomputationsComplexityLog = MathUtil.log2(result.recomputationsComplexity); // 14.14
 		result.falsePosComplexity = Math.pow(2, result.falsePosComplexityLog);
-		
+
 		result.complexityPerBiclique = result.decryptionsComplexity 
 			+ result.precomputationsComplexity 
 			+ result.bicliqueComplexity 
@@ -77,16 +77,15 @@ public class ComplexityCalculator {
 		return 1 << dimension; // d = 8 => 2^8 calls for P -> C or C -> P
 	}
 	
-	private double determinePrecomputationsComplexity(int dimension, int numBicliqueRounds) {
+	private double determinePrecomputationsComplexity(int dimension, int numBicliqueRounds, int numMatchingRounds) {
 		int numCalls = 1 << dimension; // d = 8 => 2^8!, because 2^8 * 2 rounds + 2^8 * 5 rounds = 2^8 * 7 rounds 
-		int numMatchingRounds = cipher.getNumRounds() - numBicliqueRounds;
-		double relativeFullEncryptions = (double)numMatchingRounds / (double)cipher.getNumRounds(); // 7 / 10
+		double relativeFullEncryptions = (double)numMatchingRounds / (double)(numBicliqueRounds + numMatchingRounds); // 7 / 10
 		return (double)numCalls * relativeFullEncryptions; // 2^8 * 0.7 = 179,2 = 2^{7.485}
 	}
 	
-	private double determineBicliqueComplexity(int dimension, int numBicliqueRounds) {
-		int numCalls = 1 << (dimension + 1); // d = 8 => 2^9 calls
-		double relativeFullEncryptions = (double)numBicliqueRounds / (double)cipher.getNumRounds(); // 3 / 10
+	private double determineBicliqueComplexity(int dimension, int numBicliqueRounds, int numRounds) {
+		final int numCalls = 1 << (dimension + 1); // d = 8 => 2^9 calls
+		final double relativeFullEncryptions = (double)numBicliqueRounds / (double)numRounds; // 3 / 10
 		return (double)numCalls * relativeFullEncryptions; // 2^9 * 0.3 = 153,6 = 2^{7.26}
 	}
 	
@@ -99,7 +98,7 @@ public class ComplexityCalculator {
 		double relativeFullEncryptions = (double)numActiveBytesInMatching / (double)(numActiveBytesInRegularEncryption + numActiveBytesInKeySchedule);
 		long numKeysPerBiclique = 1L << (2 * dimension);
 		double numFullEncryptionsPerBiclique = (double)numKeysPerBiclique * relativeFullEncryptions; // 2^{16} * 0.275 = 18022,4
-		return numFullEncryptionsPerBiclique; // ld(18022,4) = 2^{14.14}
+		return numFullEncryptionsPerBiclique; // log(18022,4) = 2^{14.14}
 	}
 	
 }

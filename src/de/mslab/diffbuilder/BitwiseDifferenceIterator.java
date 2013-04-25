@@ -2,7 +2,7 @@ package de.mslab.diffbuilder;
 
 import de.mslab.core.ByteArray;
 
-public class BitwiseDifferenceIterator  extends AbstractDifferenceIterator {
+public class BitwiseDifferenceIterator extends AbstractDifferenceIterator {
 	
 	public BitwiseDifferenceIterator(ByteArray difference, int dimension, int[] activePositions) {
 		super(difference, dimension);

@@ -14,8 +14,9 @@ import org.junit.Test;
 import com.itextpdf.text.DocumentException;
 
 import de.mslab.ciphers.RoundBasedBlockCipher;
-import de.mslab.ciphers.helpers.DifferentialActiveComponentsCounter;
+import de.mslab.ciphers.helpers.RecomputedOperationsCounter;
 import de.mslab.core.Biclique;
+import de.mslab.core.ByteArray;
 import de.mslab.diffbuilder.DifferentialBuilder;
 import de.mslab.rendering.BicliqueRenderer;
 import de.mslab.rendering.MatchingPhaseRenderer;
@@ -26,7 +27,7 @@ public abstract class AbstractBKRMatcherTest {
 	
 	protected Biclique biclique;
 	protected RoundBasedBlockCipher cipher;
-	protected DifferentialActiveComponentsCounter counter;
+	protected RecomputedOperationsCounter counter;
 	
 	protected DecimalFormat decimalFormat;
 	protected DifferentialBuilder differentialBuilder;
@@ -47,7 +48,7 @@ public abstract class AbstractBKRMatcherTest {
 	protected double epsilon = 0.001;
 	protected int numActiveBytesExpected;
 	protected int matchingRound;
-	protected int activeByte;
+	protected ByteArray matchingStateDifference;
 	
 	protected AbstractBKRMatcherTest() {
 		setUp();
@@ -77,7 +78,7 @@ public abstract class AbstractBKRMatcherTest {
 		serializeBiclique();
 		bicliqueRenderer.renderBiclique(bicliquePath + filename + ".pdf", biclique, cipher);
 		
-		MatchingContext matchingContext = new MatchingContext(biclique, cipher, counter, matchingRound, activeByte);
+		MatchingContext matchingContext = new MatchingContext(biclique, cipher, counter, matchingRound, matchingStateDifference);
 		MatchingDifferentialBuilderResult matchingResult = matchingDifferentialBuilder.findMinNumActiveBytes(matchingContext);
 		logMatchingResult(matchingResult);
 		
@@ -123,7 +124,7 @@ public abstract class AbstractBKRMatcherTest {
 	}
 	
 	protected void logComplexity(MatchingDifferentialBuilderResult matchingResult, ComplexityCalculationResult result) {
-		logger.info("Match at round {0} at byte {1}", matchingResult.bestMatchingRound, matchingResult.bestMatchingByte);
+		logger.info("Match at round {0}", matchingResult.bestMatchingRound);
 		logger.info("{0} active bytes in matching (P -> v <- S)", matchingResult.minNumActiveBytes);
 		logger.info("C_{full} = 2^{n - 2d}(C_{biclique} + C_{precomp} + C_{recomp} + C_{falsepos} + C_{decrypt})");
 		logger.info("2^{{0}} \\cdot (2^{{1}} + 2^{{2}} + 2^{{3}} + 2^{{4}} + 2^{{5}}) = 2^{{6}}", new Object[]{

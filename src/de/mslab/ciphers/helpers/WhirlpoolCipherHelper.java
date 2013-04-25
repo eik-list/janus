@@ -5,7 +5,7 @@ import de.mslab.core.Differential;
 
 public class WhirlpoolCipherHelper extends AbstractCipherHelper {
 
-	public int countActiveComponents(Differential stateDifferential, Differential keyDifferential) {
+	public int countRecomputedOperations(Differential stateDifferential, Differential keyDifferential) {
 		ByteArray stateDifference, keyDifference;
 		int sum = 0;
 		int fromRound = stateDifferential.fromRound;

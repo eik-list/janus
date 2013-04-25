@@ -5,7 +5,7 @@ import de.mslab.core.Differential;
 
 public abstract class BKSQHelper extends AbstractCipherHelper {
 	
-	public int countActiveComponents(Differential stateDifferential, Differential keyDifferential) {
+	public int countRecomputedOperations(Differential stateDifferential, Differential keyDifferential) {
 		ByteArray stateDifference;
 		int sum = 0;
 		int fromRound = stateDifferential.fromRound;

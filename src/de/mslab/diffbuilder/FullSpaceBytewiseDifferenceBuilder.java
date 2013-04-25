@@ -8,8 +8,7 @@ import de.mslab.errors.InvalidArgumentError;
  * classes generate differences for the round key at the starting rounds at the bicliques. 
  * The BytewiseDifferenceBuilder class injects only Math.ceil(dimension/8) active bytes at a time.
  * The FullSpaceBytewiseDifferenceBuilder always makes Math.ceil(dimension/8) bytes active, and 
- * additionally,  
- * Thus, 
+ * additionally, sets further bytes active.
  */
 public class FullSpaceBytewiseDifferenceBuilder implements DifferenceBuilder {
 	

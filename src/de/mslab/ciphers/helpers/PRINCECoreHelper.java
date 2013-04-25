@@ -46,7 +46,7 @@ public class PRINCECoreHelper extends AbstractCipherHelper {
 		return false;
 	}
 	
-	public int countActiveComponents(Differential stateDifferential, Differential keyDifferential) {
+	public int countRecomputedOperations(Differential stateDifferential, Differential keyDifferential) {
 		ByteArray stateDifference;
 		int sum = 0;
 		int fromRound = stateDifferential.fromRound;

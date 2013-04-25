@@ -21,7 +21,7 @@ public class BKRAES256MatcherTest extends AbstractBKRMatcherTest {
 		complexityExpected = 254.584;
 		
 		matchingRound = 3;
-		activeByte = 12;
+		matchingStateDifference = new ByteArray(new int[]{0,0,0,0, 0,0,0,0, 0,0,0,0, 0xff,0,0,0});
 		
 		super.setUp();
 	}

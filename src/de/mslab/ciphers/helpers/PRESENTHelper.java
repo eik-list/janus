@@ -8,7 +8,7 @@ public class PRESENTHelper extends AbstractCipherHelper {
 	
 	protected int numRounds = PRESENT.NUM_ROUNDS;
 	
-	public int countActiveComponents(Differential stateDifferential, Differential keyDifferential) {
+	public int countRecomputedOperations(Differential stateDifferential, Differential keyDifferential) {
 		ByteArray stateDifference, keyDifference;
 		int sum = 0;
 		int fromRound = stateDifferential.fromRound;

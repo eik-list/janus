@@ -3,12 +3,10 @@ package de.mslab.diffbuilder;
 import de.mslab.ciphers.RoundBasedBlockCipher;
 import de.mslab.core.ByteArray;
 import de.mslab.core.Differential;
-import de.mslab.utils.Logger;
 
 public class BicliqueDifferentialBuilder {
 	
 	public RoundBasedBlockCipher cipher;
-	private Logger logger = Logger.getLogger();
 	
 	public BicliqueDifferentialBuilder() {
 		
@@ -31,12 +29,15 @@ public class BicliqueDifferentialBuilder {
 		computeBackward(first, state);
 		
 		accumulated.firstSecretKey = firstExpandedKey.splice(0, cipher.getKeySize());
+		accumulated.keyDifference = new ByteArray(cipher.getKeySize());
 		
 		while(keyDifferenceIterator.hasNext()) {
 			secondKeyPart = keyDifferenceIterator.next();
+			accumulated.keyDifference.or(secondKeyPart);
+			
 			secondKeyPart.xor(firstKeyPart);
 			secondExpandedKey = cipher.computeExpandedKey(secondKeyPart, toRound);
-			
+
 			cipher.setExpandedKey(secondExpandedKey);
 			computeBackward(current, state);
 			
@@ -65,9 +66,12 @@ public class BicliqueDifferentialBuilder {
 		computeForward(first, state);
 		
 		accumulated.firstSecretKey = firstExpandedKey.splice(0, cipher.getKeySize());
+		accumulated.keyDifference = new ByteArray(cipher.getKeySize());
 		
 		while(keyDifferenceIterator.hasNext()) {
 			secondKeyPart = keyDifferenceIterator.next();
+			accumulated.keyDifference.or(secondKeyPart);
+			
 			secondKeyPart.xor(firstKeyPart);
 			secondExpandedKey = cipher.computeExpandedKey(secondKeyPart, fromRound);
 			
@@ -76,12 +80,9 @@ public class BicliqueDifferentialBuilder {
 			
 			current.xor(first);
 			accumulated.or(current);
-			logger.info(current);
-			break;
 		}
 		
 		accumulated.secondSecretKey = secondExpandedKey.splice(0, cipher.getKeySize());
-		logger.info(accumulated);
 		return accumulated;
 	}
 	

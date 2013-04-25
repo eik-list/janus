@@ -1,39 +1,48 @@
 package de.mslab.matching;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.mslab.ciphers.RoundBasedBlockCipher;
-import de.mslab.ciphers.helpers.DifferentialActiveComponentsCounter;
+import de.mslab.ciphers.helpers.RecomputedOperationsCounter;
 import de.mslab.core.Biclique;
 import de.mslab.core.ByteArray;
 import de.mslab.core.Difference;
 import de.mslab.core.Differential;
-import de.mslab.diffbuilder.DifferentialBuilder;
+import de.mslab.diffbuilder.BitwiseDifferenceBuilder;
+import de.mslab.diffbuilder.BitwiseDifferenceIterator;
+import de.mslab.diffbuilder.BytewiseDifferenceBuilder;
+import de.mslab.diffbuilder.DifferenceBuilder;
+import de.mslab.diffbuilder.DifferenceIterator;
+import de.mslab.diffbuilder.NibblewiseDifferenceBuilder;
+import de.mslab.errors.InvalidArgumentError;
+import de.mslab.utils.Logger;
 
 /**
  * <p>
  * Calculates the complexity for the matching part of a biclique attack on a given cipher
  * on those rounds which are not covered by a given biclique.
  * </p>
- * 
  */
 public class MatchingDifferentialBuilder {
 	
+	private Logger logger = Logger.getLogger();
+	
 	private MatchingContext context;
-	private DifferentialBuilder differentialBuilder;
 	private MatchingDifferentialBuilderResult result;
-
+	
 	private Biclique biclique;
 	private RoundBasedBlockCipher cipher;
-	private DifferentialActiveComponentsCounter counter;
+	private RecomputedOperationsCounter counter;
 	
 	private ByteArray emptyState;
 	private ByteArray[][] keys = new ByteArray[2][2];
-	
-	// private ByteArray[] previousSummedKeys = new ByteArray[2];
-	// private ByteArray[] summedKeys = new ByteArray[2];
-	// private Differential forwardKeyDifferential, backwardKeyDifferential;
+	private BitwiseDifferenceIterator deltaDifferenceIterator; 
+	private BitwiseDifferenceIterator nablaDifferenceIterator;
+	private DifferenceBuilder matchingDifferenceBuilder;
 	
 	public MatchingDifferentialBuilder() {
-		differentialBuilder = new DifferentialBuilder();
+		
 	}
 	
 	/**
@@ -45,49 +54,47 @@ public class MatchingDifferentialBuilder {
 		setUp(context);
 		
 		computeKeys();
-		determineBicliqueDimension();
-		determineBicliqueRounds();
+		createMatchingDifferenceBuilder();
+		determineBicliqueRoundsAndDimension();
 		computeMatchingRoundsRange();
 		computeDifferentials();
-		
-		for (context.iteration = 1; context.iteration < context.numIterations; context.iteration++) {
-			computeKeys();
-			computeDifferentialsForRoundAndByte(result.bestMatchingRound, result.bestMatchingByte);
-		}
-		
 		tearDown();
 		return result;
 	}
 	
+	private void createMatchingDifferenceBuilder() {
+		if (cipher.operatesNibblewise()) {
+			matchingDifferenceBuilder = new NibblewiseDifferenceBuilder();
+		} else if (cipher.operatesBytewise()) {
+			matchingDifferenceBuilder = new BytewiseDifferenceBuilder();
+		} else {
+			matchingDifferenceBuilder = new BitwiseDifferenceBuilder();
+		}
+	}
+	
 	private void setUp(MatchingContext context) {
 		this.context = context;
-		result = new MatchingDifferentialBuilderResult();
-		differentialBuilder.cipher = context.cipher;
-		biclique = context.biclique;
-		cipher = context.cipher;
-		counter = context.counter;
-		context.iteration = 0;
+		this.context.iteration = 0;
+		this.biclique = context.biclique;
+		this.cipher = context.cipher;
+		this.counter = context.counter;
+
+		this.result = new MatchingDifferentialBuilderResult();
 	}
 	
 	private void tearDown() {
-		biclique = null;
-		cipher = null;
-		counter = null;
-		differentialBuilder.cipher = null;
-		context = null;
-	}
-
-	/**
-	 * Determines the number of rounds which are covered by the given biclique.
-	 */
-	private void determineBicliqueRounds() {
-		result.numBicliqueRounds = biclique.deltaDifferential.toRound - biclique.deltaDifferential.fromRound + 1;
+		this.biclique = null;
+		this.cipher = null;
+		this.counter = null;
+		this.context = null;
 	}
 	
 	/**
-	 * Determines the biclique dimension, i. e. the number of active bytes in the secret key.
+	 * Determines the number of rounds which are covered by the given biclique
+	 * and the biclique dimension, i. e. the number of active bytes in the secret key.
 	 */
-	private void determineBicliqueDimension() {
+	private void determineBicliqueRoundsAndDimension() {
+		result.numBicliqueRounds = biclique.deltaDifferential.toRound - biclique.deltaDifferential.fromRound + 1;
 		result.dimension = biclique.dimension;
 	}
 	
@@ -135,6 +142,37 @@ public class MatchingDifferentialBuilder {
 		ByteArray k0jdiff = keys[0][0].clone();
 		ki0diff.xor(keys[i][0]);
 		k0jdiff.xor(keys[0][j]);
+		
+		int[] deltaActivePositions = findActiveBitPositionsFromDifference(biclique.deltaDifferential.keyDifference);
+		int[] nablaActivePositions = findActiveBitPositionsFromDifference(biclique.nablaDifferential.keyDifference);
+		
+		deltaDifferenceIterator = new BitwiseDifferenceIterator(
+			biclique.deltaDifferential.keyDifference, biclique.dimension, deltaActivePositions
+		);
+		nablaDifferenceIterator = new BitwiseDifferenceIterator(
+			biclique.nablaDifferential.keyDifference, biclique.dimension, nablaActivePositions
+		);
+	}
+	
+	private int[] findActiveBitPositionsFromDifference(ByteArray keyDifference) {
+		List<Integer> activePositions = new ArrayList<Integer>();
+		int length = keyDifference.length() * Byte.SIZE;
+		int numActiveBits = 0;
+		
+		for (int i = 0; i < length; i++) {
+			if (keyDifference.getBit(i)) {
+				activePositions.add(i);
+				numActiveBits++;
+			}
+		}
+		
+		int[] activePositionsArray = new int[numActiveBits];
+		
+		for (int i = 0; i < numActiveBits; i++) {
+			activePositionsArray[i] = activePositions.get(i);
+		}
+		
+		return activePositionsArray;
 	}
 	
 	private ByteArray computeExpandedKeyFromSecretKey(ByteArray secretKey) {
@@ -184,10 +222,10 @@ public class MatchingDifferentialBuilder {
 		Differential delta = biclique.deltaDifferential;
 		
 		if (delta.fromRound <= 1) { 
-			// E. g.: Biclique: 1 - 3 => Matching: 4 - 10
+			// E.g.: Biclique: 1 - 3 => Matching: 4 - 10
 			setMatchingRoundsRange(delta.toRound + 1, cipher.getNumRounds());
 		} else { 
-			// E. g.: Biclique: 8 - 10 => Matching: 1 - 7
+			// E.g.: Biclique: 8 - 10 => Matching: 1 - 7
 			setMatchingRoundsRange(1, delta.fromRound - 1);
 		}
 	}
@@ -215,90 +253,83 @@ public class MatchingDifferentialBuilder {
 	 * counts the number of active bytes, 
 	 * and stores in the result the minimum number of active bytes.
 	 */
-	private void computeDifferentials() {
+	private void computeDifferentials() throws InvalidArgumentError {
 		result.minNumActiveBytes = -1;
 		
 		if (context.isMatchingFixed) {
-			computeDifferentialsForRoundAndByte(context.matchingRound, context.activeMatchingByte);
+			int[] matchingStateActiveBitPositions = findActiveBitPositionsFromDifference(context.matchingStateDifference);
+			DifferenceIterator matchingBitsIterator = new BitwiseDifferenceIterator(emptyState, Byte.SIZE, matchingStateActiveBitPositions);
+			computeDifferentials(context.matchingRound, matchingBitsIterator);
 		} else {
-			int stateSize = cipher.getStateSize();
+			if (context.numMatchingBitsUsed < 1) {
+				throw new InvalidArgumentError("You must specify a number between 1 <= b <= n bits for matching, " +
+					"where n is the state size of the used cipher. " +
+					"Your current choice for b is " + context.numMatchingBitsUsed + " and n is " + cipher.getStateSize() +
+					"."
+				);
+			}
+			
+			long numStateDifferences = matchingDifferenceBuilder.initializeAndGetNumDifferences(
+				context.numMatchingBitsUsed, cipher.getStateSize()
+			);
 			
 			for (int matchingRound = result.matchingFromRound; matchingRound < result.matchingToRound; matchingRound++) {
-				for (int activeMatchingByte = 0; activeMatchingByte < stateSize; activeMatchingByte++) {
-					computeDifferentialsForRoundAndByte(matchingRound, activeMatchingByte);
+				for (int i = 0; i < numStateDifferences; i++) {
+					computeDifferentials(matchingRound, matchingDifferenceBuilder.next());
 				}
 			}
 		}
 	}
 	
-	private void computeDifferentialsForRoundAndByte(int matchingRound, int activeMatchingByte) {
+	private void computeDifferentials(int matchingRound, DifferenceIterator matchingBitsIterator) {
 		final int i = 1;
 		final int j = 1;
 		
-		ByteArray matchingState = emptyState.clone();
-		matchingState.set(activeMatchingByte, emptyState.get(activeMatchingByte) ^ 0xFF);
+		deltaDifferenceIterator.reset();
+		nablaDifferenceIterator.reset();
 		
-		Differential p_to_v = differentialBuilder.computeForwardDifferential(
-			result.matchingFromRound, matchingRound, emptyState, emptyState, keys[i][0], keys[i][j]
+		Differential p_to_v = computeForwardDifferentialToMiddle(
+			result.matchingFromRound, matchingRound, deltaDifferenceIterator, keys[0][0]
 		);
-		Differential s_to_v = differentialBuilder.computeBackwardDifferential(
-			matchingRound + 1, result.matchingToRound, emptyState, emptyState, keys[0][j], keys[i][j]
+		Differential s_to_v = computeBackwardDifferentialToMiddle(
+			matchingRound + 1, result.matchingToRound, nablaDifferenceIterator, keys[0][0]
 		);
 		
-		Differential v_to_p = differentialBuilder.computeBackwardDifferentialFromMiddle(
-			result.matchingFromRound, matchingRound, emptyState, matchingState, keys[i][j] 
+		//logger.info("p -> v {0}", p_to_v);
+		//logger.info("s <- v {0}", s_to_v);
+		
+		Differential v_to_p = computeBackwardDifferentialFromMiddle(
+			result.matchingFromRound, matchingRound, emptyState, matchingBitsIterator, keys[i][j] 
 		);
-		Differential v_to_s = differentialBuilder.computeForwardDifferentialFromMiddle(
-			matchingRound + 1, result.matchingToRound, emptyState, matchingState, keys[i][j]
+		Differential v_to_s = computeForwardDifferentialFromMiddle(
+			matchingRound + 1, result.matchingToRound, emptyState, matchingBitsIterator, keys[i][j]
 		);
+		
+		//logger.info("p <- v {0}", v_to_p);
+		//logger.info("s -> v {0}", v_to_s);
 		
 		Differential p_mergedto_v = mergeIntoForwardDifferential(p_to_v, v_to_p);
 		Differential s_mergedto_v = mergeIntoBackwardDifferential(s_to_v, v_to_s);
 		
-		if (context.iteration == 0) {
-			int numActiveBytes = counter.countActiveComponents(p_mergedto_v) + counter.countActiveComponents(s_mergedto_v);
+		int numActiveBytes = counter.countRecomputedOperations(p_mergedto_v) 
+			+ counter.countRecomputedOperations(s_mergedto_v);
+		
+		if (result.minNumActiveBytes == -1 || numActiveBytes < result.minNumActiveBytes) {
+			result.minNumActiveBytes = numActiveBytes;
+			result.bestMatchingRound = matchingRound;
 			
-			if (result.minNumActiveBytes == -1 || numActiveBytes < result.minNumActiveBytes) {
-				result.minNumActiveBytes = numActiveBytes;
-				result.bestMatchingRound = matchingRound;
-				result.bestMatchingByte = activeMatchingByte;
-				
-				result.p_to_v = p_to_v;
-				result.s_to_v = s_to_v;
-				result.v_to_p = v_to_p;
-				result.v_to_s = v_to_s;
-				
-				result.p_mergedto_v = p_mergedto_v;
-				result.s_mergedto_v = s_mergedto_v;
-			}
-		} else {
-			mergeDifferentials(result.p_mergedto_v, p_mergedto_v);
-			mergeDifferentials(result.s_mergedto_v, s_mergedto_v);
+			result.p_to_v = p_to_v;
+			result.s_to_v = s_to_v;
+			result.v_to_p = v_to_p;
+			result.v_to_s = v_to_s;
+			
+			result.p_mergedto_v = p_mergedto_v;
+			result.s_mergedto_v = s_mergedto_v;
 		}
 		
-		if (context.iteration + 1 == context.numIterations) {
-			result.minNumActiveBytes = counter.countActiveComponents(result.p_mergedto_v)
-				+ counter.countActiveComponents(result.s_mergedto_v);
-			// result.minNumActiveBytes = counter.countActiveComponents(result.p_mergedto_v, forwardKeyDifferential) 
-			// 	+ counter.countActiveComponents(result.s_mergedto_v, backwardKeyDifferential);
-		}
-	}
-	
-	private void mergeDifferentials(Differential original, Differential toMerge) {
-		ByteArray originalState, mergeState;
-		ByteArray originalIntermediateState, mergeIntermediateState;
-		
-		for (int round = original.fromRound; round <= original.toRound; round++) {
-			originalState = original.getStateDifference(round).getDelta();
-			mergeState = toMerge.getStateDifference(round).getDelta();
-			originalState.or(mergeState);
-			
-			if (original.getIntermediateStateDifference(round) != null) {
-				originalIntermediateState = original.getIntermediateStateDifference(round).getDelta();
-				mergeIntermediateState = toMerge.getIntermediateStateDifference(round).getDelta();
-				originalIntermediateState.or(mergeIntermediateState);
-			}
-		}
+		result.minNumActiveBytes = counter.countRecomputedOperations(result.p_mergedto_v)
+			+ counter.countRecomputedOperations(result.s_mergedto_v);
+		//logger.info("num active {0}", result.minNumActiveBytes);
 	}
 	
 	private Differential mergeIntoForwardDifferential(Differential original, Differential toMergeIn) {
@@ -333,6 +364,241 @@ public class MatchingDifferentialBuilder {
 		if (first != null && second != null) {
 			first.and(second);
 		}
+	}
+	
+	private Differential computeBackwardDifferentialFromMiddle(int fromRound, int toRound,
+		ByteArray firstStartingState, DifferenceIterator stateBitsIterator, ByteArray expandedKey) {
+
+		ByteArray secondStartingState;
+		
+		Differential accumulated = new Differential(fromRound, toRound);
+		Differential current = new Differential(fromRound, toRound);
+		Differential first = new Differential(fromRound, toRound);
+		
+		fillDifferential(accumulated);
+		cipher.setExpandedKey(expandedKey);
+		computeBackward(first, firstStartingState);
+		
+		stateBitsIterator.reset();
+		
+		while(stateBitsIterator.hasNext()) {
+			secondStartingState = stateBitsIterator.next();
+			computeBackward(current, secondStartingState);
+			current.xor(first);
+			accumulated.or(current);
+		}
+		
+		return accumulated;
+	}
+	
+	private Differential computeForwardDifferentialFromMiddle(int fromRound, int toRound, 
+		ByteArray firstStartingState, DifferenceIterator stateBitsIterator, ByteArray expandedKey) {
+		
+		ByteArray secondStartingState;
+		
+		Differential accumulated = new Differential(fromRound, toRound);
+		Differential current = new Differential(fromRound, toRound);
+		Differential first = new Differential(fromRound, toRound);
+		
+		fillDifferential(accumulated);
+		cipher.setExpandedKey(expandedKey);
+		computeForward(first, firstStartingState);
+
+		stateBitsIterator.reset();
+		
+		while(stateBitsIterator.hasNext()) {
+			secondStartingState = stateBitsIterator.next();
+			computeForward(current, secondStartingState);
+			current.xor(first);
+			accumulated.or(current);
+		}
+		
+		return accumulated;
+	}
+	
+	private Differential computeBackwardDifferentialToMiddle(int fromRound, int toRound, 
+		DifferenceIterator keyDifferenceIterator, ByteArray firstExpandedKey) {
+		
+		ByteArray state = new ByteArray(cipher.getStateSize());
+		ByteArray secondKeyPart;
+		ByteArray secondExpandedKey = null;
+		ByteArray firstKeyPart = cipher.computeKeyPart(firstExpandedKey, toRound);
+		
+		Differential accumulated = new Differential(fromRound, toRound);
+		Differential current = new Differential(fromRound, toRound);
+		Differential first = new Differential(fromRound, toRound);
+		
+		fillDifferential(accumulated);
+		cipher.setExpandedKey(firstExpandedKey);
+		computeBackward(first, state);
+		
+		accumulated.firstSecretKey = firstExpandedKey.splice(0, cipher.getKeySize());
+		accumulated.keyDifference = new ByteArray(cipher.getKeySize());
+		
+		while(keyDifferenceIterator.hasNext()) {
+			secondKeyPart = keyDifferenceIterator.next();
+			accumulated.keyDifference.or(secondKeyPart);
+			
+			secondKeyPart.xor(firstKeyPart);
+			secondExpandedKey = cipher.computeExpandedKey(secondKeyPart, toRound);
+			
+			cipher.setExpandedKey(secondExpandedKey);
+			computeBackward(current, state);
+			
+			current.xor(first);
+			accumulated.or(current);
+		}
+		
+		accumulated.secondSecretKey = secondExpandedKey.splice(0, cipher.getKeySize());
+		return accumulated;
+	}
+	
+	private Differential computeForwardDifferentialToMiddle(int fromRound, int toRound, 
+		DifferenceIterator keyDifferenceIterator, ByteArray firstExpandedKey) {
+		
+		ByteArray state = new ByteArray(cipher.getStateSize());
+		ByteArray secondKeyPart;
+		ByteArray secondExpandedKey = null;
+		ByteArray firstKeyPart = cipher.computeKeyPart(firstExpandedKey, fromRound);
+		
+		Differential accumulated = new Differential(fromRound, toRound);
+		Differential current = new Differential(fromRound, toRound);
+		Differential first = new Differential(fromRound, toRound);
+		
+		fillDifferential(accumulated);
+		cipher.setExpandedKey(firstExpandedKey);
+		computeForward(first, state);
+		
+		accumulated.firstSecretKey = firstExpandedKey.splice(0, cipher.getKeySize());
+		accumulated.keyDifference = new ByteArray(cipher.getKeySize());
+		
+		while(keyDifferenceIterator.hasNext()) {
+			secondKeyPart = keyDifferenceIterator.next();
+			accumulated.keyDifference.or(secondKeyPart);
+			
+			secondKeyPart.xor(firstKeyPart);
+			secondExpandedKey = cipher.computeExpandedKey(secondKeyPart, fromRound);
+			
+			cipher.setExpandedKey(secondExpandedKey);
+			computeForward(current, state);
+			
+			current.xor(first);
+			accumulated.or(current);
+		}
+		
+		accumulated.secondSecretKey = secondExpandedKey.splice(0, cipher.getKeySize());
+		return accumulated;
+	}
+	
+	private void computeBackward(Differential differential, ByteArray startingState) {
+		ByteArray key = null;
+		ByteArray state = startingState.clone();
+		int fromRound = differential.fromRound;
+		int toRound = differential.toRound;
+		
+		if (toRound == cipher.getNumRounds() && cipher.hasKeyInjectionInRound(toRound + 1)) {
+			key = cipher.getRoundKey(toRound + 1);
+			differential.setKeyDifference(toRound + 1, key);
+			storeIntermediateState(differential, state, key, toRound + 1);
+		}
+		
+		differential.setStateDifference(toRound, state);
+		
+		for (int round = toRound; round >= fromRound; round--) {
+			if (cipher.hasKeyInjectionInRound(round)) {
+				key = cipher.getRoundKey(round);
+				differential.setKeyDifference(round, key);
+			}
+			
+			if (cipher.hasKeyInjectionInRound(round) && cipher.injectsKeyAtRoundEnd(round)) {
+				storeIntermediateState(differential, state, key, round);
+			}
+			
+			state = cipher.decryptRound(state, round);
+			differential.setStateDifference(round - 1, state);
+			
+			if (cipher.hasKeyInjectionInRound(round) && cipher.injectsKeyAtRoundBegin(round)) {
+				storeIntermediateState(differential, state, key, round);
+			}
+		}
+		
+		if (fromRound == 1 && cipher.hasKeyInjectionInRound(0)) {
+			key = cipher.getRoundKey(0);
+			differential.setKeyDifference(0, key);
+			storeIntermediateState(differential, state, key, 0);
+		}
+	}
+	
+	private void computeForward(Differential differential, ByteArray startingState) {
+		ByteArray key = null;
+		ByteArray state = startingState.clone();
+		int fromRound = differential.fromRound;
+		int toRound = differential.toRound;
+		
+		differential.setStateDifference(fromRound - 1, state);
+		
+		if (fromRound == 1 && cipher.hasKeyInjectionInRound(0)) {
+			key = cipher.getRoundKey(0);
+			differential.setKeyDifference(0, key);
+			storeIntermediateState(differential, state, key, 0);
+		}
+		
+		for (int round = fromRound; round <= toRound; round++) {
+			if (cipher.hasKeyInjectionInRound(round)) {
+				key = cipher.getRoundKey(round);
+				differential.setKeyDifference(round, key);
+				
+				if (cipher.injectsKeyAtRoundBegin(round)) {
+					storeIntermediateState(differential, state, key, round);
+				}
+			}
+			
+			state = cipher.encryptRound(state, round);
+			differential.setStateDifference(round, state);
+			
+			if (cipher.hasKeyInjectionInRound(round) && cipher.injectsKeyAtRoundEnd(round)) {
+				storeIntermediateState(differential, state, key, round);
+			}
+		}
+		
+		if (toRound == cipher.getNumRounds() && cipher.hasKeyInjectionInRound(toRound + 1)) {
+			key = cipher.getRoundKey(toRound + 1);
+			differential.setKeyDifference(toRound + 1, key);
+			storeIntermediateState(differential, state, key, toRound + 1);
+		}
+	}
+	
+	private void fillDifferential(Differential differential) {
+		ByteArray key = new ByteArray(cipher.getStateSize());
+		ByteArray state = new ByteArray(cipher.getStateSize());
+		int fromRound = differential.fromRound;
+		int toRound = differential.toRound;
+		
+		differential.setStateDifference(fromRound - 1, state.clone());
+		
+		if (fromRound == 1 && cipher.hasKeyInjectionInRound(0)) {
+			differential.setKeyDifference(0, key.clone());
+			storeIntermediateState(differential, state, key, 0);
+		}
+		
+		for (int round = fromRound; round <= toRound; round++) {
+			if (cipher.hasKeyInjectionInRound(round)) {
+				differential.setKeyDifference(round, key.clone());
+				storeIntermediateState(differential, state, key, round);
+			}
+			
+			differential.setStateDifference(round, state.clone());
+		}
+		
+		if (toRound == cipher.getNumRounds() && cipher.hasKeyInjectionInRound(toRound + 1)) {
+			differential.setKeyDifference(toRound + 1, key.clone());
+			storeIntermediateState(differential, state, key, toRound + 1);
+		}
+	}
+	
+	private void storeIntermediateState(Differential differential, ByteArray state, ByteArray key, int round) {
+		state = state.clone().xor(key);
+		differential.setIntermediateStateDifference(round, state);
 	}
 	
 }

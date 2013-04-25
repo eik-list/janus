@@ -9,7 +9,6 @@ import de.mslab.core.Differential;
 public class MatchingDifferentialBuilderResult {
 	
 	public int bestMatchingRound;
-	public int bestMatchingByte;
 	public int dimension;
 	public int matchingFromRound = -1;
 	public int matchingToRound = -1;

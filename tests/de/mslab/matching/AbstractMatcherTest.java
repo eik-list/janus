@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.itextpdf.text.DocumentException;
 
 import de.mslab.ciphers.RoundBasedBlockCipher;
-import de.mslab.ciphers.helpers.DifferentialActiveComponentsCounter;
+import de.mslab.ciphers.helpers.RecomputedOperationsCounter;
 import de.mslab.core.Biclique;
 import de.mslab.rendering.MatchingPhaseRenderer;
 import de.mslab.utils.BicliqueXMLParser;
@@ -20,7 +20,7 @@ public abstract class AbstractMatcherTest {
 	
 	protected Biclique biclique;
 	protected RoundBasedBlockCipher cipher;
-	protected DifferentialActiveComponentsCounter counter;
+	protected RecomputedOperationsCounter counter;
 	protected Logger logger = Logger.getLogger();
 	protected MatchingDifferentialBuilder matchingDifferentialBuilder;
 	
@@ -81,7 +81,7 @@ public abstract class AbstractMatcherTest {
 		logComplexity(matchingResult, complexityCalculationResult);
 		renderMatchingDifferential(matchingResult, pdfPathname);
 	}
-
+	
 	protected void logMatchingResult(MatchingDifferentialBuilderResult matchingResult) {
 		logger.info("P -> v");
 		logger.info("{0}", matchingResult.p_to_v);
@@ -110,7 +110,7 @@ public abstract class AbstractMatcherTest {
 	}
 	
 	private void logComplexity(MatchingDifferentialBuilderResult matchingResult, ComplexityCalculationResult result) {
-		logger.info("Match at round {0} at byte {1}", matchingResult.bestMatchingRound, matchingResult.bestMatchingByte);
+		logger.info("Match at round {0}", matchingResult.bestMatchingRound);
 		logger.info("{0} active components in matching (P -> v <- S)", matchingResult.minNumActiveBytes);
 		logger.info("C_{full} = 2^{n - 2d}(C_{biclique} + C_{precomp} + C_{recomp} + C_{falsepos} + C_{decrypt})");
 		logger.info("2^{{0}} \\cdot (2^{{1}} + 2^{{2}} + 2^{{3}} + 2^{{4}} + 2^{{5}}) = 2^{{6}}", new Object[]{

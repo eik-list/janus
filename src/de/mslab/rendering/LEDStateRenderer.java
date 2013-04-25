@@ -60,11 +60,11 @@ public class LEDStateRenderer extends StateRenderer {
 				}
 				
 				if (rendersColumnwise) {
-					positionX = (float)position.x + column * cellSize;
-					positionY = (float)position.y - (row + 1) * cellSize;
-				} else {
 					positionX = (float)position.x + row * cellSize;
 					positionY = (float)position.y - (column + 1) * cellSize;
+				} else {
+					positionX = (float)position.x + column * cellSize;
+					positionY = (float)position.y - (row + 1) * cellSize;
 				}
 				
 				renderNibble(contentByte, positionX, positionY, activeColor, value);

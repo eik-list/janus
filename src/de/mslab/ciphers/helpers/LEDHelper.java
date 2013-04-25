@@ -5,7 +5,7 @@ import de.mslab.core.Differential;
 
 public class LEDHelper extends AbstractCipherHelper {
 	
-	public int countActiveComponents(Differential stateDifferential, Differential keyDifferential) {
+	public int countRecomputedOperations(Differential stateDifferential, Differential keyDifferential) {
 		ByteArray stateDifference;
 		int sum = 0;
 		int fromRound = stateDifferential.fromRound;
@@ -49,6 +49,10 @@ public class LEDHelper extends AbstractCipherHelper {
 			if (round % 4 == 0 && checkKey(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
+		}
+		
+		if (toRound % 4 == 0 && checkKey(toRound, deltaDifferential, nablaDifferential)) {
+			return true;
 		}
 		
 		return false;

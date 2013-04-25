@@ -1,7 +1,5 @@
 package de.mslab.bicliquesearch;
 
-import org.junit.Test;
-
 import de.mslab.ciphers.Serpent;
 import de.mslab.ciphers.helpers.SerpentHelper;
 import de.mslab.diffbuilder.NibblewiseDifferenceBuilder;
@@ -15,7 +13,7 @@ public class SerpentBicliqueFinderTest extends AbstractBicliqueFinderTest {
 		
 		finderContext.cipher = new Serpent();
 		finderContext.stopAfterFoundFirstBiclique = true;
-		finderContext.dimension = 4;
+		finderContext.dimension = 8;
 		finderContext.differenceBuilder = new NibblewiseDifferenceBuilder();
 		finderContext.comparator = new SerpentHelper();
 		
@@ -24,36 +22,6 @@ public class SerpentBicliqueFinderTest extends AbstractBicliqueFinderTest {
 		renderer.setDifferentialRenderer(differentialRenderer);
 		
 		maxNumBicliqueRounds = 5;
-	}
-
-	@Test
-	public void testFindBicliques() {
-		/*
-		int numRounds = finderContext.cipher.getNumRounds();
-		int endRound = numRounds - maxNumBicliqueRounds + 1;
-		
-		if (endRound < 1) {
-			endRound = 1;
-		}
-		
-		for (int fromRound = numRounds; fromRound >= endRound; fromRound--) {
-			find(fromRound, numRounds);
-		}*/
-	}
-	
-	@Test
-	public void testFindBicliquesAtStart() {
-		find(1, 3);
-		/*int numRounds = finderContext.cipher.getNumRounds();
-		int endRound = maxNumBicliqueRounds;
-		
-		if (endRound > numRounds) {
-			endRound = numRounds;
-		}
-		
-		for (int toRound = 1; toRound <= endRound; toRound++) {
-			find(1, toRound);
-		}*/
 	}
 	
 }

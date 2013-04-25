@@ -14,7 +14,7 @@ import com.itextpdf.text.DocumentException;
 import de.mslab.ciphers.CipherFactory;
 import de.mslab.ciphers.CipherFactory.CipherName;
 import de.mslab.ciphers.helpers.CipherHelperFactory;
-import de.mslab.ciphers.helpers.DifferentialActiveComponentsCounter;
+import de.mslab.ciphers.helpers.RecomputedOperationsCounter;
 import de.mslab.core.Biclique;
 import de.mslab.matching.ComplexityCalculationResult;
 import de.mslab.matching.ComplexityCalculator;
@@ -34,7 +34,7 @@ public class MatchingApplication extends AbstractApplication {
 	}
 	
 	private Biclique biclique;
-	private DifferentialActiveComponentsCounter counter;
+	private RecomputedOperationsCounter counter;
 	private MatchingDifferentialBuilder matchingDifferentialBuilder;
 	private MatchingContext matchingContext;
 	
@@ -118,7 +118,7 @@ public class MatchingApplication extends AbstractApplication {
 	}
 	
 	private void logComplexity(MatchingDifferentialBuilderResult matchingResult, ComplexityCalculationResult result) {
-		logger.info("Match at round {0} at byte {1}", matchingResult.bestMatchingRound, matchingResult.bestMatchingByte);
+		logger.info("Match at round {0}", matchingResult.bestMatchingRound);
 		logger.info("{0} active components in matching (P -> v <- S)", matchingResult.minNumActiveBytes);
 		logger.info("C_{full} = 2^{n - 2d}(C_{biclique} + C_{precomp} + C_{recomp} + C_{falsepos} + C_{decrypt})");
 		logger.info("2^{{0}} \\cdot (2^{{1}} + 2^{{2}} + 2^{{3}} + 2^{{4}} + 2^{{5}}) = 2^{{6}}", new Object[]{

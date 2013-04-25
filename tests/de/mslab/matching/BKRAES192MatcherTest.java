@@ -21,7 +21,7 @@ public class BKRAES192MatcherTest extends AbstractBKRMatcherTest {
 		complexityExpected = 190.191;
 		
 		matchingRound = 3;
-		activeByte = 12;
+		matchingStateDifference = new ByteArray(new int[]{0,0,0,0, 0,0,0,0, 0,0,0,0, 0xff,0,0,0});
 		
 		mixColumns();
 		super.setUp();

@@ -272,8 +272,7 @@ public class Logger {
 	}
 	
 	/**
-	 * Replaces all occurances of {@code {i}} in {@code message} with 
-	 * {@code params[i]}, where i in {@code [0,params.length]}.
+	 * Replaces all occurances of {@code {i} in {@code message} with {@code params[i]}.
 	 * @param message The message with log occurance tags placed within. 
 	 * @param params An object with log contents that shall be placed in the message.
 	 * @return The new message string.

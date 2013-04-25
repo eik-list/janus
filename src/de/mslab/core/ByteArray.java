@@ -239,6 +239,27 @@ public class ByteArray implements Externalizable {
 	}
 	
 	/**
+	 * Counts and returns the number of non-zero bits in the byte array.  
+	 */
+	public int countNumActiveBits() {
+		int numActiveBits = 0;
+		int value;
+		final int mask = 1; 
+		
+		for (int i = 0; i < array.length; i++) {
+			value = array[i];
+			for (int j = 0; j < 8; j++) {
+				if ((value & mask) != 0) {
+					numActiveBits++;
+				}
+				value >>= 1;
+			}
+		}
+		
+		return numActiveBits;
+	}
+	
+	/**
 	 * Counts and returns the number of non-zero bytes in the byte array.  
 	 */
 	public int countNumActiveBytes() {
@@ -970,5 +991,5 @@ public class ByteArray implements Externalizable {
 			}
 		}
 	}
-
+	
 }
