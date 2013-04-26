@@ -13,7 +13,7 @@ import de.mslab.ciphers.helpers.AES128Helper;
 import de.mslab.ciphers.helpers.RecomputedOperationsCounter;
 import de.mslab.core.Biclique;
 import de.mslab.matching.MatchingContext;
-import de.mslab.matching.MatchingDifferentialBuilder;
+import de.mslab.matching.MatchingFinder;
 import de.mslab.utils.BicliqueXMLParser;
 import de.mslab.utils.Logger;
 
@@ -25,7 +25,7 @@ public class MatchingBenchmarkTest {
 	private RoundBasedBlockCipher cipher;
 	private RecomputedOperationsCounter counter;
 	private Logger logger = Logger.getLogger();
-	private MatchingDifferentialBuilder matchingDifferentialBuilder;
+	private MatchingFinder matchingDifferentialBuilder;
 	
 	private BicliqueXMLParser parser;
 	private String xmlPathname;
@@ -38,7 +38,7 @@ public class MatchingBenchmarkTest {
 	public void setUp() {
 		cipher = new AES128();
 		counter = new AES128Helper();
-		matchingDifferentialBuilder = new MatchingDifferentialBuilder();
+		matchingDifferentialBuilder = new MatchingFinder();
 		numIterations = 100;
 		xmlPathname = "results/xml/AES128_8_10.xml";
 		
@@ -58,7 +58,7 @@ public class MatchingBenchmarkTest {
 		
 		for (int i = 0; i < numIterations; i++) {
 			MatchingContext matchingContext = new MatchingContext(biclique, cipher, counter);
-			matchingDifferentialBuilder.findMinNumActiveBytes(matchingContext);
+			matchingDifferentialBuilder.findOptimalMatching(matchingContext);
 		}
 		
 		long endTime = System.nanoTime();

@@ -32,7 +32,7 @@ public class MCrypton64 extends MCrypton {
 				U[1] = U[0];
 				U[0] = temp;
 			}
-
+			
 			for (int i = 0; i < keySize / 2; i++) {
 				keyPart.set(2 * i, (U[i] >> 8) & 0xFF);
 				keyPart.set(2 * i + 1, U[i] & 0xFF);
@@ -49,7 +49,8 @@ public class MCrypton64 extends MCrypton {
 		ByteArray expandedKey = new ByteArray(EXPANDED_KEY_LENGTH);
 		
 		for (int i = 0; i < keySize / 2; i++) {
-			U[i] = (key.get(2 * i) << 8) | (key.get(2 * i + 1));
+			U[i] = ((key.get(2 * i) << 8) & 0xFF00) 
+				 | ((key.get(2 * i + 1) & 0xFF));
 		}
 		
 		for (int round = 0; round <= numRounds; round++) {

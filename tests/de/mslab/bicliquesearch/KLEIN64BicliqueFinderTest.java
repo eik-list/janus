@@ -2,7 +2,7 @@ package de.mslab.bicliquesearch;
 
 import de.mslab.ciphers.KLEIN64;
 import de.mslab.ciphers.helpers.KLEIN64Helper;
-import de.mslab.diffbuilder.BitwiseDifferenceBuilder;
+import de.mslab.diffbuilder.NibblewiseDifferenceBuilder;
 import de.mslab.rendering.BicliqueDifferentialRenderer;
 import de.mslab.rendering.DifferentialRenderer;
 import de.mslab.rendering.LEDStateRenderer;
@@ -14,11 +14,11 @@ public class KLEIN64BicliqueFinderTest extends AbstractBicliqueFinderTest {
 		super.setUp();
 		finderContext.cipher = new KLEIN64();
 		finderContext.stopAfterFoundFirstBiclique = false;
-		finderContext.dimension = 4;
-		finderContext.differenceBuilder = new BitwiseDifferenceBuilder();
+		finderContext.dimension = 8;
+		finderContext.differenceBuilder = new NibblewiseDifferenceBuilder();
 		finderContext.comparator = new KLEIN64Helper();
 		
-		maxNumBicliqueRounds = 3;
+		maxNumBicliqueRounds = 4;
 		
 		StateRenderer stateRenderer = new LEDStateRenderer(10);
 		DifferentialRenderer differentialRenderer = new BicliqueDifferentialRenderer();

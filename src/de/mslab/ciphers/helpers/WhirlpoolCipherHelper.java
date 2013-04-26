@@ -34,29 +34,29 @@ public class WhirlpoolCipherHelper extends AbstractCipherHelper {
 		return sum;
 	}
 	
-	public boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential) {
+	public boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential) {
 		int fromRound = deltaDifferential.fromRound;
 		int toRound = deltaDifferential.toRound;
 		
 		if (fromRound == 1) {
-			if (checkIntermediateState(0, deltaDifferential, nablaDifferential)
-				|| checkKey(0, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(0, deltaDifferential, nablaDifferential)
+				|| shareActiveNonLinearOperationsInKey(0, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		} else {
-			if (checkState(fromRound - 1, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInState(fromRound - 1, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
 		
 		for (int round = fromRound; round < toRound; round++) {
-			if (checkState(round, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInState(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
 		
 		for (int round = fromRound; round <= toRound; round++) {
-			if (checkKey(round, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInKey(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}

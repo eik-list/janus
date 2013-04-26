@@ -19,8 +19,8 @@ import de.mslab.core.Biclique;
 import de.mslab.matching.ComplexityCalculationResult;
 import de.mslab.matching.ComplexityCalculator;
 import de.mslab.matching.MatchingContext;
-import de.mslab.matching.MatchingDifferentialBuilder;
-import de.mslab.matching.MatchingDifferentialBuilderResult;
+import de.mslab.matching.MatchingFinder;
+import de.mslab.matching.MatchingFinderResult;
 import de.mslab.rendering.MatchingPhaseRenderer;
 import de.mslab.utils.BicliqueXMLParser;
 
@@ -35,7 +35,7 @@ public class MatchingApplication extends AbstractApplication {
 	
 	private Biclique biclique;
 	private RecomputedOperationsCounter counter;
-	private MatchingDifferentialBuilder matchingDifferentialBuilder;
+	private MatchingFinder matchingDifferentialBuilder;
 	private MatchingContext matchingContext;
 	
 	private ComplexityCalculator complexityCalculator;
@@ -69,7 +69,7 @@ public class MatchingApplication extends AbstractApplication {
 		complexityCalculator = new ComplexityCalculator();
 		counter = CipherHelperFactory.createCipherHelper(cipherName);
 		
-		matchingDifferentialBuilder = new MatchingDifferentialBuilder();
+		matchingDifferentialBuilder = new MatchingFinder();
 		parser = new BicliqueXMLParser();
 		renderer = new MatchingPhaseRenderer();
 		
@@ -83,13 +83,14 @@ public class MatchingApplication extends AbstractApplication {
 	}
 	
 	public void run() throws IOException, DocumentException {
-		MatchingDifferentialBuilderResult matchingResult = matchingDifferentialBuilder.findMinNumActiveBytes(matchingContext);
+		MatchingFinderResult matchingResult = matchingDifferentialBuilder.findOptimalMatching(matchingContext);
 		ComplexityCalculationResult result = complexityCalculator.computeComplexity(
 			cipher, 
 			matchingResult.dimension, 
-			matchingResult.minNumActiveBytes, 
+			matchingResult.minRecomputedOperations, 
 			matchingResult.numBicliqueRounds, 
-			matchingResult.matchingToRound - matchingResult.matchingFromRound + 1
+			matchingResult.matchingToRound - matchingResult.matchingFromRound + 1, 
+			matchingContext.numMatchingBits
 		);
 		logComplexity(matchingResult, result);
 		renderMatchingDifferential(matchingResult, pdfPathname);
@@ -117,9 +118,9 @@ public class MatchingApplication extends AbstractApplication {
 		}
 	}
 	
-	private void logComplexity(MatchingDifferentialBuilderResult matchingResult, ComplexityCalculationResult result) {
+	private void logComplexity(MatchingFinderResult matchingResult, ComplexityCalculationResult result) {
 		logger.info("Match at round {0}", matchingResult.bestMatchingRound);
-		logger.info("{0} active components in matching (P -> v <- S)", matchingResult.minNumActiveBytes);
+		logger.info("{0} active components in matching (P -> v <- S)", matchingResult.minRecomputedOperations);
 		logger.info("C_{full} = 2^{n - 2d}(C_{biclique} + C_{precomp} + C_{recomp} + C_{falsepos} + C_{decrypt})");
 		logger.info("2^{{0}} \\cdot (2^{{1}} + 2^{{2}} + 2^{{3}} + 2^{{4}} + 2^{{5}}) = 2^{{6}}", new Object[]{
 			round(result.numBicliquesLog), 
@@ -137,7 +138,7 @@ public class MatchingApplication extends AbstractApplication {
 		formatter.printHelp("matchingsearch", options);
 	}
 	
-	private void renderMatchingDifferential(MatchingDifferentialBuilderResult matchingResult, String pathname) throws IOException, DocumentException {
+	private void renderMatchingDifferential(MatchingFinderResult matchingResult, String pathname) throws IOException, DocumentException {
 		renderer.renderMatchingPhase(pathname, matchingResult, cipher);
 	}
 	

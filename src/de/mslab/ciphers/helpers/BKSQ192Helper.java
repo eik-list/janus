@@ -4,15 +4,15 @@ import de.mslab.core.ByteArray;
 
 
 public class BKSQ192Helper extends BKSQHelper {
-	
-	protected int countActiveKeyBytes(int round, ByteArray key) {
+
+	protected int countActiveKeyBytes(int round, ByteArray key, 
+		ByteArray stateBeforeKeyAddition, ByteArray stateAfterKeyAddition) {
 		int sum = 0;
 		
-		if (round % 2 == 1) {
-			for (int i = 9; i < 12; i++) {
-				if (key.get(i) != 0) {
-					sum++;
-				}
+		for (int i = 9; i < 12; i++) {
+			if (key.get(i) != 0 
+				&& (stateBeforeKeyAddition.get(i) != 0 || stateAfterKeyAddition.get(i) != 0)) {
+				sum++;
 			}
 		}
 		

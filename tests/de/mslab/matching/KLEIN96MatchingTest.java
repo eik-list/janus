@@ -10,8 +10,8 @@ import de.mslab.rendering.StateRenderer;
 public class KLEIN96MatchingTest extends AbstractMatcherTest { 
 	
 	public void setUp() {
-		xmlPathname = "results/xml/KLEIN96_1_3.xml";
-		pdfPathname = "results/matching/KLEIN96_1_3.pdf";
+		xmlPathname = "results/xml/KLEIN96_1_4.xml";
+		pdfPathname = "results/matching/KLEIN96_1_4.pdf";
 		cipher = new KLEIN96();
 		counter = new KLEIN96Helper();
 		

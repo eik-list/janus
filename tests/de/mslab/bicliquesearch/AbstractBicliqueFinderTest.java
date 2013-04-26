@@ -21,6 +21,7 @@ public abstract class AbstractBicliqueFinderTest {
 	protected BicliqueFinderContext finderContext = new BicliqueFinderContext();
 	protected Logger logger = Logger.getLogger();
 	protected int maxNumBicliqueRounds = 4;
+	
 	protected BicliqueXMLSerializer serializer = new BicliqueXMLSerializer();
 	protected BicliqueRenderer renderer = new BicliqueRenderer();
 	protected String xmlPath = "results/xml/";
@@ -76,7 +77,7 @@ public abstract class AbstractBicliqueFinderTest {
 		logger.info("Found {0} biclique(s) for {1} rounds [{2} - {3}]", finder.getBicliques().size(), finderContext.cipher.getName(), finderContext.fromRound, finderContext.toRound);
 		
 		if (finder.getBicliques().size() > 0) {
-			Biclique biclique = determineBicliqueWithMinimalDataComplexity(finder.getBicliques());
+			Biclique biclique = determineBicliqueWithMinimalScore(finder.getBicliques());
 			
 			logBiclique(biclique);
 			saveBiclique(biclique);
@@ -86,7 +87,7 @@ public abstract class AbstractBicliqueFinderTest {
 		tearDown();
 	}
 	
-	protected Biclique determineBicliqueWithMinimalDataComplexity(List<Biclique> bicliques) {
+	protected Biclique determineBicliqueWithMinimalScore(List<Biclique> bicliques) {
 		final int numBicliques = bicliques.size();
 		int score;
 		int minScore = Integer.MAX_VALUE;

@@ -13,7 +13,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.mslab.ciphers.RoundBasedBlockCipher;
-import de.mslab.matching.MatchingDifferentialBuilderResult;
+import de.mslab.matching.MatchingFinderResult;
 
 
 public class MatchingPhaseRenderer {
@@ -48,7 +48,7 @@ public class MatchingPhaseRenderer {
 		this.differentialRenderer = differentialRenderer;
 	}
 	
-	public void renderMatchingPhase(String pathname, MatchingDifferentialBuilderResult result, RoundBasedBlockCipher cipher) 
+	public void renderMatchingPhase(String pathname, MatchingFinderResult result, RoundBasedBlockCipher cipher) 
 	throws IOException, DocumentException {
 		setSize(result, cipher);
 		createPDF(pathname);
@@ -56,7 +56,7 @@ public class MatchingPhaseRenderer {
 		closePDF();
 	}
 	
-	protected void setSize(MatchingDifferentialBuilderResult result, RoundBasedBlockCipher cipher) {
+	protected void setSize(MatchingFinderResult result, RoundBasedBlockCipher cipher) {
 		differentialRenderer.setUp(cipher);
 		Point maxBounds = new Point();
 		differentialBounds = differentialRenderer.determineSize(result.p_mergedto_v, result.bestMatchingRound);
@@ -79,7 +79,7 @@ public class MatchingPhaseRenderer {
 		pageSize = new Rectangle((float)differentialBounds.x, sizeY);
 	}
 	
-	protected void renderDifferentials(MatchingDifferentialBuilderResult result, RoundBasedBlockCipher cipher) throws DocumentException, IOException {
+	protected void renderDifferentials(MatchingFinderResult result, RoundBasedBlockCipher cipher) throws DocumentException, IOException {
 		differentialRenderer.setUp(cipher);
 		differentialRenderer.setContentByte(contentByte);
 		

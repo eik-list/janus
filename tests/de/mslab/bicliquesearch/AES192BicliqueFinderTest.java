@@ -19,7 +19,7 @@ public class AES192BicliqueFinderTest extends AbstractBicliqueFinderTest {
 		super.setUp();
 		
 		finderContext.cipher = new AES192();
-		finderContext.stopAfterFoundFirstBiclique = true;
+		finderContext.stopAfterFoundFirstBiclique = false;
 		finderContext.dimension = 8;
 		finderContext.differenceBuilder = new BytewiseDifferenceBuilder();
 		finderContext.comparator = new AES192Helper();

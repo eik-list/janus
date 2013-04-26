@@ -8,5 +8,5 @@ import de.mslab.core.Differential;
  * 
  */
 public interface DifferentialComparator {
-	boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential);
+	boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential);
 }

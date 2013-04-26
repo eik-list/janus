@@ -1,7 +1,5 @@
 package de.mslab.bicliquesearch;
 
-import org.junit.Test;
-
 import de.mslab.ciphers.PRINCECore;
 import de.mslab.ciphers.helpers.PRINCECoreHelper;
 import de.mslab.diffbuilder.NibblewiseDifferenceBuilder;
@@ -14,7 +12,7 @@ public class PRINCECoreBicliqueFinderTest extends AbstractBicliqueFinderTest {
 		super.setUp();
 		
 		finderContext.cipher = new PRINCECore();
-		finderContext.stopAfterFoundFirstBiclique = true;
+		finderContext.stopAfterFoundFirstBiclique = false;
 		finderContext.dimension = 8;
 		finderContext.differenceBuilder = new NibblewiseDifferenceBuilder();
 		finderContext.comparator = new PRINCECoreHelper();
@@ -25,35 +23,6 @@ public class PRINCECoreBicliqueFinderTest extends AbstractBicliqueFinderTest {
 		int cellSize = 10;
 		differentialRenderer.setStateRenderer(new LEDStateRenderer(cellSize));
 		renderer.setDifferentialRenderer(differentialRenderer);
-	}
-	
-	@Test
-	public void testFindBicliques() {
-		int numRounds = finderContext.cipher.getNumRounds(); // - 1;
-		int endRound = numRounds - maxNumBicliqueRounds + 1;
-		
-		if (endRound < 1) {
-			endRound = 1;
-		}
-		
-		for (int fromRound = numRounds; fromRound >= endRound; fromRound--) {
-			find(fromRound, numRounds);
-		}
-	}
-	
-	@Test
-	public void testFindBicliquesAtStart() {
-		int numRounds = finderContext.cipher.getNumRounds();
-		int endRound = maxNumBicliqueRounds + 1;
-		int fromRound = 1;
-		
-		if (endRound > numRounds) {
-			endRound = numRounds;
-		}
-		
-		for (int toRound = fromRound; toRound <= endRound; toRound++) {
-			find(fromRound, toRound);
-		}
 	}
 	
 }

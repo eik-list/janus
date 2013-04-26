@@ -7,7 +7,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
 
 import de.mslab.ciphers.RoundBasedBlockCipher;
-import de.mslab.matching.MatchingDifferentialBuilderResult;
+import de.mslab.matching.MatchingFinderResult;
 
 
 public class ThreeFishMatchingPhaseRenderer extends MatchingPhaseRenderer {
@@ -16,7 +16,7 @@ public class ThreeFishMatchingPhaseRenderer extends MatchingPhaseRenderer {
 		differentialRenderer = new ThreeFishDifferentialRenderer();
 	}
 
-	public void renderMatchingPhase(String pathname, MatchingDifferentialBuilderResult result, RoundBasedBlockCipher cipher) 
+	public void renderMatchingPhase(String pathname, MatchingFinderResult result, RoundBasedBlockCipher cipher) 
 	throws IOException, DocumentException {
 		setSize(result, cipher);
 		createPDF(pathname);
@@ -24,7 +24,7 @@ public class ThreeFishMatchingPhaseRenderer extends MatchingPhaseRenderer {
 		closePDF();
 	}
 	
-	protected void renderDifferentials(MatchingDifferentialBuilderResult result, RoundBasedBlockCipher cipher) throws DocumentException, IOException {
+	protected void renderDifferentials(MatchingFinderResult result, RoundBasedBlockCipher cipher) throws DocumentException, IOException {
 		differentialRenderer.setUp(cipher);
 		differentialRenderer.setContentByte(contentByte);
 		
@@ -40,7 +40,7 @@ public class ThreeFishMatchingPhaseRenderer extends MatchingPhaseRenderer {
 		differentialRenderer.tearDown();
 	}
 	
-	protected void setSize(MatchingDifferentialBuilderResult result, RoundBasedBlockCipher cipher) {
+	protected void setSize(MatchingFinderResult result, RoundBasedBlockCipher cipher) {
 		differentialRenderer.setUp(cipher);
 		
 		if (result.bestMatchingRound - result.matchingFromRound < result.matchingToRound - result.bestMatchingRound) {

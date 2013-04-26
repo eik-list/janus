@@ -27,50 +27,50 @@ public class LEDHelper extends AbstractCipherHelper {
 		return sum;
 	}
 	
-	public boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential) {
+	public boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential) {
 		int fromRound = deltaDifferential.fromRound;
 		int toRound = deltaDifferential.toRound;
 		
 		if (fromRound == 1) {
-			if (checkIntermediateState(0, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(0, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		} else {
-			if (checkState(fromRound - 1, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInState(fromRound - 1, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
 		
 		for (int round = fromRound; round < toRound; round++) {
-			if (checkState(round, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInState(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 			
-			if (round % 4 == 0 && checkKey(round, deltaDifferential, nablaDifferential)) {
+			if (round % 4 == 0 && shareActiveNonLinearOperationsInKey(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
 		
-		if (toRound % 4 == 0 && checkKey(toRound, deltaDifferential, nablaDifferential)) {
+		if (toRound % 4 == 0 && shareActiveNonLinearOperationsInKey(toRound, deltaDifferential, nablaDifferential)) {
 			return true;
 		}
 		
 		return false;
 	}
 
-	protected boolean checkKey(int round, Differential deltaDifferential, Differential nablaDifferential) {
+	protected boolean shareActiveNonLinearOperationsInKey(int round, Differential deltaDifferential, Differential nablaDifferential) {
 		return deltaDifferential.keyDifferences.get(round).sharesActiveNibblesWith(
 			nablaDifferential.keyDifferences.get(round)
 		);
 	}
 	
-	protected boolean checkIntermediateState(int round, Differential deltaDifferential, Differential nablaDifferential) {
+	protected boolean shareActiveNonLinearOperationsInIntermediateState(int round, Differential deltaDifferential, Differential nablaDifferential) {
 		return deltaDifferential.intermediateStateDifferences.get(round).sharesActiveNibblesWith(
 			nablaDifferential.intermediateStateDifferences.get(round)
 		);
 	}
 	
-	protected boolean checkState(int round, Differential deltaDifferential, Differential nablaDifferential) {
+	protected boolean shareActiveNonLinearOperationsInState(int round, Differential deltaDifferential, Differential nablaDifferential) {
 		return deltaDifferential.stateDifferences.get(round).sharesActiveNibblesWith(
 			nablaDifferential.stateDifferences.get(round)
 		);

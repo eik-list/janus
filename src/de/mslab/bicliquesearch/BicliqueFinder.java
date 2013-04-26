@@ -9,6 +9,7 @@ import de.mslab.core.ByteArray;
 import de.mslab.core.Differential;
 import de.mslab.diffbuilder.BicliqueDifferentialBuilder;
 import de.mslab.diffbuilder.DifferenceIterator;
+import de.mslab.diffbuilder.DifferentialBuilder;
 import de.mslab.utils.Logger;
 
 /**
@@ -19,7 +20,7 @@ public class BicliqueFinder {
 	private BicliqueFinderContext context;
 	private volatile List<Biclique> bicliques;
 	
-	private BicliqueDifferentialBuilder differentialBuilder = new BicliqueDifferentialBuilder();
+	private DifferentialBuilder differentialBuilder = new BicliqueDifferentialBuilder();
 	private volatile List<Differential> deltaDifferentials;
 	private List<DeltaThread> deltaThreads;
 	private List<NablaThread> nablaThreads;
@@ -303,7 +304,7 @@ public class BicliqueFinder {
 		startTime = System.nanoTime();
 		
 		// init dependencies
-		differentialBuilder.cipher = context.cipher;
+		differentialBuilder.setCipher(context.cipher);
 		
 		// create threads
 		if (deltaThreads == null || deltaThreads.size() != context.numThreads) {
@@ -397,7 +398,7 @@ public class BicliqueFinder {
 			for (long i = startIndex; i < endIndex; i++) {
 				keyDifferencesIterator = context.differenceBuilder.next();
 				deltaDifferential = differentialBuilder.computeForwardDifferential(
-					context.fromRound, context.toRound, keyDifferencesIterator, initialKey
+					context.fromRound, context.toRound, keyDifferencesIterator, initialKey, context.fromRound
 				);
 				
 				synchronized (mutex) {
@@ -464,13 +465,13 @@ public class BicliqueFinder {
 			nabla: for (long j = startIndex; j < endIndex; j++) {
 				keyDifferencesIterator = context.differenceBuilder.next();
 				nablaDifferential = differentialBuilder.computeBackwardDifferential(
-					context.fromRound, context.toRound, keyDifferencesIterator, initialKey
+					context.fromRound, context.toRound, keyDifferencesIterator, initialKey, context.toRound
 				);
 				
 				for (int i = 0; i < numDeltaDifferentials; i++) {
 					deltaDifferential = deltaDifferentials.get(i);
 					
-					if (!context.comparator.shareActiveComponents(deltaDifferential, nablaDifferential)) {
+					if (!context.comparator.shareActiveNonLinearOperations(deltaDifferential, nablaDifferential)) {
 						biclique = new Biclique(deltaDifferential, nablaDifferential);
 						biclique.cipherName = context.cipher.getName();
 						biclique.dimension = context.dimension;

@@ -7,7 +7,7 @@ public class ARIA256MatchingTest extends AbstractMatcherTest {
 	
 	public void setUp() {
 		xmlPathname = "results/xml/ARIA256_1_2.xml";
-		pdfPathname = "results/matching/AES256_1_2.pdf";
+		pdfPathname = "results/matching/ARIA256_1_2.pdf";
 		cipher = new ARIA256();
 		counter = new ARIA256Helper();
 		

@@ -66,7 +66,7 @@ public class MatchingContext {
 	 * matching. The more bytes are used, the more components may need to be recomputed. 
 	 * Thus, the more bytes are used, the higher the computational complexity.  
 	 */
-	public int numMatchingBitsUsed = Byte.SIZE;
+	public int numMatchingBits = Byte.SIZE;
 	/**
 	 * The current iteration of the MatchingDifferentialBuilder.
 	 */

@@ -23,13 +23,13 @@ public class LBlockHelper extends AbstractCipherHelper {
 		return sum;
 	}
 	
-	public boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential) {
+	public boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential) {
 		int fromRound = deltaDifferential.fromRound;
 		int toRound = deltaDifferential.toRound;
 		
 		for (int round = fromRound; round <= toRound; round++) {
-			if (checkIntermediateState(round, deltaDifferential, nablaDifferential)
-				|| checkKey(round, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(round, deltaDifferential, nablaDifferential)
+				|| shareActiveNonLinearOperationsInKey(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
@@ -37,19 +37,19 @@ public class LBlockHelper extends AbstractCipherHelper {
 		return false;
 	}
 	
-	protected boolean checkKey(int round, Differential deltaDifferential, Differential nablaDifferential) {
+	protected boolean shareActiveNonLinearOperationsInKey(int round, Differential deltaDifferential, Differential nablaDifferential) {
 		return deltaDifferential.keyDifferences.get(round).sharesActiveNibblesWith(
 			nablaDifferential.keyDifferences.get(round)
 		);
 	}
 	
-	protected boolean checkIntermediateState(int round, Differential deltaDifferential, Differential nablaDifferential) {
+	protected boolean shareActiveNonLinearOperationsInIntermediateState(int round, Differential deltaDifferential, Differential nablaDifferential) {
 		ByteArray deltaState = deltaDifferential.intermediateStateDifferences.get(round).getDelta().splice(0, 4);
 		ByteArray nablaState = nablaDifferential.intermediateStateDifferences.get(round).getDelta().splice(0, 4);
 		return deltaState.sharesActiveNibblesWith(nablaState);
 	}
 	
-	protected boolean checkState(int round, Differential deltaDifferential, Differential nablaDifferential) {
+	protected boolean shareActiveNonLinearOperationsInState(int round, Differential deltaDifferential, Differential nablaDifferential) {
 		ByteArray deltaState = deltaDifferential.stateDifferences.get(round).getDelta().splice(0, 4);
 		ByteArray nablaState = nablaDifferential.stateDifferences.get(round).getDelta().splice(0, 4);
 		return deltaState.sharesActiveNibblesWith(nablaState);

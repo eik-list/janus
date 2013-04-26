@@ -5,40 +5,40 @@ import de.mslab.core.Differential;
 
 public class PRINCECoreHelper extends AbstractCipherHelper {
 	
-	public boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential) {
+	public boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential) {
 		int fromRound = deltaDifferential.fromRound;
 		int toRound = deltaDifferential.toRound;
 		
 		if (fromRound == 1) {
-			if (checkIntermediateState(0, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(0, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
 		
 		if (toRound == 11) {
 			for (int round = fromRound; round < toRound; round++) {
-				if (checkState(round, deltaDifferential, nablaDifferential)) {
+				if (shareActiveNonLinearOperationsInState(round, deltaDifferential, nablaDifferential)) {
 					return true;
 				}
 			}
 			
-			if (checkIntermediateState(12, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(12, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		} else {
 			for (int round = fromRound; round <= toRound; round++) {
-				if (checkState(round, deltaDifferential, nablaDifferential)) {
+				if (shareActiveNonLinearOperationsInState(round, deltaDifferential, nablaDifferential)) {
 					return true;
 				}
 			}
 		}
 		
 		if (fromRound != 6) {
-			if (checkKey(fromRound, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInKey(fromRound, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		} else if (toRound != 6) {
-			if (checkKey(toRound, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInKey(toRound, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}

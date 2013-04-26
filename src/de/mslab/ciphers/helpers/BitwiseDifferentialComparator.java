@@ -15,7 +15,7 @@ public class BitwiseDifferentialComparator implements DifferentialComparator {
 	 * Returns <code>true</code> if this differential shares any active bit with 
 	 * the given other in any state or key.
 	 */
-	public boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential) {
+	public boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential) {
 		int fromRound = deltaDifferential.fromRound;
 		int toRound = deltaDifferential.toRound;
 		Difference deltaStateDifference = deltaDifferential.getStateDifference(fromRound - 1);

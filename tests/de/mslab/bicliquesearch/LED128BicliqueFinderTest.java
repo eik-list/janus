@@ -13,7 +13,7 @@ public class LED128BicliqueFinderTest extends AbstractBicliqueFinderTest {
 	public void setUp() {
 		super.setUp();
 		finderContext.cipher = new LED128();
-		finderContext.stopAfterFoundFirstBiclique = true;
+		finderContext.stopAfterFoundFirstBiclique = false;
 		finderContext.dimension = 8;
 		finderContext.differenceBuilder = new NibblewiseDifferenceBuilder();
 		finderContext.comparator = new LEDHelper();

@@ -22,7 +22,8 @@ public class ComplexityCalculator {
 	 * for the biclique.
 	 */
 	public ComplexityCalculationResult computeComplexity(RoundBasedBlockCipher cipher, 
-		int dimension, int numActiveBytesInMatching, int numBicliqueRounds, int numMatchingRounds) {
+		int dimension, int numActiveBytesInMatching, int numBicliqueRounds, int numMatchingRounds,
+		int numMatchingBits) {
 		
 		this.cipher = cipher;
 		ComplexityCalculationResult result = new ComplexityCalculationResult();
@@ -31,7 +32,7 @@ public class ComplexityCalculator {
 		result.precomputationsComplexity = determinePrecomputationsComplexity(dimension, numBicliqueRounds, numMatchingRounds); // 2^{7.485}
 		result.bicliqueComplexity = determineBicliqueComplexity(dimension, numBicliqueRounds, numMatchingRounds); // 2^{7.26}
 		result.recomputationsComplexity = determineRecomputationsComplexity(cipher, dimension, numActiveBytesInMatching, numMatchingRounds + numBicliqueRounds); // 2^{14.14}
-		result.falsePosComplexityLog = determineFalsePositiveComplexityLog(dimension, 1);
+		result.falsePosComplexityLog = determineFalsePositiveComplexityLog(dimension, numMatchingBits);
 		
 		result.decryptionsComplexityLog = MathUtil.log2(result.decryptionsComplexity); // 8
 		result.bicliqueComplexityLog = MathUtil.log2(result.bicliqueComplexity); // 7.26
@@ -65,12 +66,8 @@ public class ComplexityCalculator {
 		}
 	}
 	
-	private double determineFalsePositiveComplexityLog(int dimension, int numActiveBytesInMatching) {
-		if (cipher.operatesBytewise()) {
-			return (2 * dimension) - (numActiveBytesInMatching * Byte.SIZE); // d = 8, 1 byte => (16 - 8) = 8
-		} else {
-			return (2 * dimension) - (numActiveBytesInMatching * Byte.SIZE); // d = 6, 1 byte => (16 - 8) = 4
-		}
+	private double determineFalsePositiveComplexityLog(int dimension, int numMatchingBits) {
+		return (2 * dimension) - numMatchingBits;
 	}
 	
 	private double determineDecryptionsComplexity(int dimension) {

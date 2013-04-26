@@ -10,8 +10,8 @@ import de.mslab.rendering.StateRenderer;
 public class KLEIN80MatchingTest extends AbstractMatcherTest { 
 	
 	public void setUp() {
-		xmlPathname = "results/xml/KLEIN80_1_3.xml";
-		pdfPathname = "results/matching/KLEIN80_1_3.pdf";
+		xmlPathname = "results/xml/KLEIN80_1_4.xml";
+		pdfPathname = "results/matching/KLEIN80_1_4.pdf";
 		cipher = new KLEIN80();
 		counter = new KLEIN80Helper();
 		

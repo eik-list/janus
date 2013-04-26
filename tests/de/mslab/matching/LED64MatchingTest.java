@@ -16,6 +16,8 @@ public class LED64MatchingTest extends AbstractMatcherTest {
 		
 		super.setUp();
 		
+		matchingContext.numMatchingBits = 8;
+		
 		DifferentialRenderer differentialRenderer = new MatchingDifferentialRenderer();
 		int cellSize = 10;
 		differentialRenderer.setStateRenderer(new LEDStateRenderer(cellSize));

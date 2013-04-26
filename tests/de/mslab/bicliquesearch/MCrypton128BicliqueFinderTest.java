@@ -1,10 +1,10 @@
 package de.mslab.bicliquesearch;
 
-import org.junit.Test;
-
 import de.mslab.ciphers.MCrypton128;
 import de.mslab.ciphers.helpers.MCryptonHelper;
 import de.mslab.diffbuilder.NibblewiseDifferenceBuilder;
+import de.mslab.rendering.BicliqueDifferentialRenderer;
+import de.mslab.rendering.LEDStateRenderer;
 
 public class MCrypton128BicliqueFinderTest extends AbstractBicliqueFinderTest {
 	
@@ -17,35 +17,11 @@ public class MCrypton128BicliqueFinderTest extends AbstractBicliqueFinderTest {
 		finderContext.comparator = new MCryptonHelper();
 		
 		maxNumBicliqueRounds = 4;
-	}
-	
-	@Test
-	public void testFindBicliques() {
-		int numRounds = finderContext.cipher.getNumRounds() - 1;
-		int endRound = numRounds - maxNumBicliqueRounds + 1;
 		
-		if (endRound < 1) {
-			endRound = 1;
-		}
-		
-		for (int fromRound = numRounds; fromRound >= endRound; fromRound--) {
-			find(fromRound, numRounds);
-		}
-	}
-	
-	@Test
-	public void testFindBicliquesAtStart() {
-		int numRounds = finderContext.cipher.getNumRounds();
-		int endRound = maxNumBicliqueRounds;
-		int fromRound = 2;
-		
-		if (endRound > numRounds) {
-			endRound = numRounds;
-		}
-		
-		for (int toRound = fromRound; toRound <= endRound; toRound++) {
-			find(fromRound, toRound);
-		}
+		BicliqueDifferentialRenderer differentialRenderer = new BicliqueDifferentialRenderer();
+		int cellSize = 10;
+		differentialRenderer.setStateRenderer(new LEDStateRenderer(cellSize));
+		renderer.setDifferentialRenderer(differentialRenderer);
 	}
 	
 }

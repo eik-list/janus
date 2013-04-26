@@ -161,6 +161,8 @@ public class SQUARE extends AbstractRoundBasedBlockCipher {
 			expandedKey.copyBytes(roundKey, 0, i * stateSize);
 		}
 		
+		roundKey = keyPart.clone();
+		
 		// compute backwards
 		for (int i = round - 1; i >= 0; i--) {
 			roundKey = invertExpandRoundKey(roundKey, i);
@@ -293,10 +295,10 @@ public class SQUARE extends AbstractRoundBasedBlockCipher {
 			}
 		}
 		
-		prevRoundKey.set(0, roundKey.get(0) ^ prevRoundKey.get(15));
-		prevRoundKey.set(1, roundKey.get(1) ^ prevRoundKey.get(12) ^ RCON[round + 1]);
-		prevRoundKey.set(2, roundKey.get(2) ^ prevRoundKey.get(13));
-		prevRoundKey.set(3, roundKey.get(3) ^ prevRoundKey.get(14));
+		prevRoundKey.set(0, roundKey.get(0) ^ prevRoundKey.get(13) ^ RCON[round + 1]);
+		prevRoundKey.set(1, roundKey.get(1) ^ prevRoundKey.get(14));
+		prevRoundKey.set(2, roundKey.get(2) ^ prevRoundKey.get(15));
+		prevRoundKey.set(3, roundKey.get(3) ^ prevRoundKey.get(12));
 		
 		return prevRoundKey;
 	}

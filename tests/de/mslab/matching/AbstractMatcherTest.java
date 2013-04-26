@@ -22,7 +22,7 @@ public abstract class AbstractMatcherTest {
 	protected RoundBasedBlockCipher cipher;
 	protected RecomputedOperationsCounter counter;
 	protected Logger logger = Logger.getLogger();
-	protected MatchingDifferentialBuilder matchingDifferentialBuilder;
+	protected MatchingFinder matchingDifferentialBuilder;
 	
 	protected MatchingContext matchingContext;
 	protected ComplexityCalculator complexityCalculator;
@@ -44,7 +44,7 @@ public abstract class AbstractMatcherTest {
 		otherSymbols.setGroupingSeparator(','); 
 		decimalFormat = new DecimalFormat("#.##", otherSymbols);
 		
-		matchingDifferentialBuilder = new MatchingDifferentialBuilder();
+		matchingDifferentialBuilder = new MatchingFinder();
 		complexityCalculator = new ComplexityCalculator();
 		parser = new BicliqueXMLParser();
 		renderer = new MatchingPhaseRenderer();
@@ -55,7 +55,7 @@ public abstract class AbstractMatcherTest {
 		
 		loadAndParseXML(xmlPathname);
 		matchingContext.biclique = biclique;
-		logger.info("Biclique {0}", biclique);
+		// logger.info("Biclique {0}", biclique);
 	}
 	
 	public void tearDownAfterClass() {
@@ -66,23 +66,24 @@ public abstract class AbstractMatcherTest {
 	
 	@Test
 	public void testMatch() throws IOException, DocumentException {
-		MatchingDifferentialBuilderResult matchingResult = matchingDifferentialBuilder.findMinNumActiveBytes(
+		MatchingFinderResult matchingResult = matchingDifferentialBuilder.findOptimalMatching(
 			matchingContext
 		);
-		logMatchingResult(matchingResult);
+		//logMatchingResult(matchingResult);
 		
 		complexityCalculationResult = complexityCalculator.computeComplexity(
 			cipher, 
 			matchingResult.dimension, 
-			matchingResult.minNumActiveBytes, 
+			matchingResult.minRecomputedOperations, 
 			matchingResult.numBicliqueRounds, 
-			matchingResult.matchingToRound - matchingResult.matchingFromRound + 1
+			matchingResult.matchingToRound - matchingResult.matchingFromRound + 1, 
+			matchingContext.numMatchingBits
 		);
 		logComplexity(matchingResult, complexityCalculationResult);
 		renderMatchingDifferential(matchingResult, pdfPathname);
 	}
 	
-	protected void logMatchingResult(MatchingDifferentialBuilderResult matchingResult) {
+	protected void logMatchingResult(MatchingFinderResult matchingResult) {
 		logger.info("P -> v");
 		logger.info("{0}", matchingResult.p_to_v);
 		logger.info("v <- S");
@@ -109,9 +110,9 @@ public abstract class AbstractMatcherTest {
 		}
 	}
 	
-	private void logComplexity(MatchingDifferentialBuilderResult matchingResult, ComplexityCalculationResult result) {
+	protected void logComplexity(MatchingFinderResult matchingResult, ComplexityCalculationResult result) {
 		logger.info("Match at round {0}", matchingResult.bestMatchingRound);
-		logger.info("{0} active components in matching (P -> v <- S)", matchingResult.minNumActiveBytes);
+		logger.info("{0} operations have to be recomputed", matchingResult.minRecomputedOperations);
 		logger.info("C_{full} = 2^{n - 2d}(C_{biclique} + C_{precomp} + C_{recomp} + C_{falsepos} + C_{decrypt})");
 		logger.info("2^{{0}} \\cdot (2^{{1}} + 2^{{2}} + 2^{{3}} + 2^{{4}} + 2^{{5}}) = 2^{{6}}", new Object[]{
 			round(result.numBicliquesLog), 
@@ -124,7 +125,7 @@ public abstract class AbstractMatcherTest {
 		});
 	}
 	
-	protected void renderMatchingDifferential(MatchingDifferentialBuilderResult matchingResult, String pathname) throws IOException, DocumentException {
+	protected void renderMatchingDifferential(MatchingFinderResult matchingResult, String pathname) throws IOException, DocumentException {
 		renderer.renderMatchingPhase(pathname, matchingResult, cipher);
 	}
 	

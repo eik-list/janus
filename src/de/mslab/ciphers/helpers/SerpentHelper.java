@@ -22,18 +22,18 @@ public class SerpentHelper extends AbstractCipherHelper {
 		return sum;
 	}
 	
-	public boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential) {
+	public boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential) {
 		int fromRound = deltaDifferential.fromRound;
 		int toRound = deltaDifferential.toRound;
 		
 		for (int round = fromRound; round <= toRound; round++) {
-			if (checkIntermediateState(round, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
 		
 		if (toRound == Serpent.NUM_ROUNDS + 1) {
-			if (checkIntermediateState(toRound, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(toRound, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
@@ -41,14 +41,14 @@ public class SerpentHelper extends AbstractCipherHelper {
 		return false;
 	}
 	
-	protected boolean checkIntermediateState(int round, Differential deltaDifferential, Differential nablaDifferential) {
+	protected boolean shareActiveNonLinearOperationsInIntermediateState(int round, Differential deltaDifferential, Differential nablaDifferential) {
 		return shareActiveSBoxes(
 			deltaDifferential.intermediateStateDifferences.get(round).getDelta().readUInts(), 
 			nablaDifferential.intermediateStateDifferences.get(round).getDelta().readUInts()
 		);
 	}
 	
-	protected boolean checkState(int round, Differential deltaDifferential, Differential nablaDifferential) {
+	protected boolean shareActiveNonLinearOperationsInState(int round, Differential deltaDifferential, Differential nablaDifferential) {
 		return shareActiveSBoxes(
 			deltaDifferential.stateDifferences.get(round).getDelta().readUInts(), 
 			nablaDifferential.stateDifferences.get(round).getDelta().readUInts()

@@ -157,7 +157,7 @@ public class ARIA extends AbstractRoundBasedBlockCipher {
 	}
 	
 	public boolean hasKeyInjectionInRound(int round) {
-		return round >= 1 && round <= numRounds;
+		return round >= 1 && round <= numRounds + 1;
 	}
 	
 	public boolean injectsKeyAtRoundBegin(int round) {

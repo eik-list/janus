@@ -9,7 +9,7 @@ public class AES128BicliqueFinderTest extends AbstractBicliqueFinderTest {
 	public void setUp() {
 		super.setUp();
 		finderContext.cipher = new AES128();
-		finderContext.stopAfterFoundFirstBiclique = true;
+		finderContext.stopAfterFoundFirstBiclique = false;
 		finderContext.dimension = 8;
 		finderContext.differenceBuilder = new BytewiseDifferenceBuilder();
 		finderContext.comparator = new AES128Helper();

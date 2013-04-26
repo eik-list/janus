@@ -4,7 +4,7 @@ import de.mslab.ciphers.AES192;
 import de.mslab.ciphers.helpers.AES192Helper;
 import de.mslab.core.Biclique;
 import de.mslab.core.ByteArray;
-import de.mslab.diffbuilder.DifferentialBuilder;
+import de.mslab.diffbuilder.BKRDifferentialBuilder;
 
 public class BKRAES192MatcherTest extends AbstractBKRMatcherTest { 
 	
@@ -44,7 +44,7 @@ public class BKRAES192MatcherTest extends AbstractBKRMatcherTest {
 		
 		biclique = new Biclique();
 		biclique.dimension = 8;
-		differentialBuilder = new DifferentialBuilder();
+		differentialBuilder = new BKRDifferentialBuilder();
 		differentialBuilder.cipher = cipher;
 		biclique.deltaDifferential = differentialBuilder.computeForwardDifferentialFromRoundKeys(
 			fromRound, toRound, emptyState.clone(), deltaKey, initialKey

@@ -12,31 +12,39 @@ public abstract class BKSQHelper extends AbstractCipherHelper {
 		int toRound = stateDifferential.toRound;
 		
 		if (fromRound == 1) {
-			sum += countActiveKeyBytes(0, keyDifferential.getKeyDifference(0).getDelta());
+			sum += countActiveKeyBytes(
+				0, keyDifferential.getKeyDifference(0).getDelta(), 
+				keyDifferential.getStateDifference(0).getDelta(), 
+				keyDifferential.getIntermediateStateDifference(0).getDelta()
+			);
 		}
 		
 		for (int round = fromRound; round <= toRound; round++) {
 			stateDifference = stateDifferential.getIntermediateStateDifference(round).getDelta();
 			sum += stateDifference.countNumActiveBytes();
-			sum += countActiveKeyBytes(round, keyDifferential.getKeyDifference(round).getDelta());
+			sum += countActiveKeyBytes(
+				round, keyDifferential.getKeyDifference(round).getDelta(),
+				keyDifferential.getIntermediateStateDifference(round).getDelta(), 
+				keyDifferential.getStateDifference(round).getDelta()
+			);
 		}
 		
 		return sum;
 	}
 	
-	public boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential) {
+	public boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential) {
 		int fromRound = deltaDifferential.fromRound;
 		int toRound = deltaDifferential.toRound;
 		
 		if (fromRound == 1) {
-			if (checkKey(0, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInKey(0, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
 		
 		for (int round = fromRound; round <= toRound; round++) {
-			if (checkIntermediateState(round, deltaDifferential, nablaDifferential) 
-				|| checkKey(round, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(round, deltaDifferential, nablaDifferential) 
+				|| shareActiveNonLinearOperationsInKey(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}
@@ -44,6 +52,7 @@ public abstract class BKSQHelper extends AbstractCipherHelper {
 		return false;
 	}
 	
-	protected abstract int countActiveKeyBytes(int round, ByteArray key);
+	protected abstract int countActiveKeyBytes(int round, ByteArray key, 
+		ByteArray stateBeforeKeyAddition, ByteArray stateAfterKeyAddition);
 	
 }

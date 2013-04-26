@@ -19,19 +19,13 @@ public class SQUAREHelper extends AbstractCipherHelper {
 		return sum;
 	}
 	
-	public boolean shareActiveComponents(Differential deltaDifferential, Differential nablaDifferential) {
+	public boolean shareActiveNonLinearOperations(Differential deltaDifferential, Differential nablaDifferential) {
 		int fromRound = deltaDifferential.fromRound;
 		int toRound = deltaDifferential.toRound;
 		
-		if (fromRound == 1) {
-			if (checkKey(0, deltaDifferential, nablaDifferential)) {
-				return true;
-			}
-		}
-		
 		for (int round = fromRound; round <= toRound; round++) {
-			if (checkIntermediateState(round, deltaDifferential, nablaDifferential) 
-				|| checkKey(round, deltaDifferential, nablaDifferential)) {
+			if (shareActiveNonLinearOperationsInIntermediateState(round, deltaDifferential, nablaDifferential) 
+				|| shareActiveNonLinearOperationsInKey(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		}

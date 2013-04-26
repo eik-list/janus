@@ -11,7 +11,7 @@ public class KLEIN96BicliqueFinderTest extends AbstractBicliqueFinderTest {
 	public void setUp() {
 		super.setUp();
 		finderContext.cipher = new KLEIN96();
-		finderContext.stopAfterFoundFirstBiclique = true;
+		finderContext.stopAfterFoundFirstBiclique = false;
 		finderContext.dimension = 8;
 		finderContext.differenceBuilder = new NibblewiseDifferenceBuilder();
 		finderContext.comparator = new KLEIN96Helper();
