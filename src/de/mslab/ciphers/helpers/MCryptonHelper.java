@@ -5,6 +5,8 @@ import de.mslab.core.Differential;
 
 public class MCryptonHelper extends AbstractCipherHelper {
 	
+	private static final int[] SBOX_AFFECTED_NIBBLES_IN_KEYS = { 0, 5, 10, 15 };
+	
 	public MCryptonHelper() {
 		super();
 	}
@@ -15,7 +17,7 @@ public class MCryptonHelper extends AbstractCipherHelper {
 		
 		if (fromRound == 1) {
 			if (shareActiveNonLinearOperationsInIntermediateState(0, deltaDifferential, nablaDifferential)
-				/*|| checkKey(0, deltaDifferential, nablaDifferential)*/) {
+				|| shareActiveNonLinearOperationsInKey(0, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
 		} else {
@@ -30,11 +32,11 @@ public class MCryptonHelper extends AbstractCipherHelper {
 			}
 		}
 		
-		/*for (int round = fromRound; round <= toRound; round++) {
-			if (checkKey(round, deltaDifferential, nablaDifferential)) {
+		for (int round = fromRound; round <= toRound; round++) {
+			if (shareActiveNonLinearOperationsInKey(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}
-		}*/
+		}
 		
 		return false;
 	}
@@ -48,8 +50,7 @@ public class MCryptonHelper extends AbstractCipherHelper {
 		if (fromRound == 1) {
 			stateDifference = stateDifferential.getIntermediateStateDifference(0).getDelta();
 			sum += stateDifference.countNumActiveNibbles();
-			// TODO
-			// sum += countActiveKeyBytes(0, keyDifferential.getKeyDifference(0).getDelta());
+			sum += countActiveNonLinearOperationsInKey(keyDifferential.getKeyDifference(0).getDelta());
 		} else {
 			stateDifference = stateDifferential.getStateDifference(fromRound - 1).getDelta();
 			sum += stateDifference.countNumActiveNibbles();
@@ -61,17 +62,33 @@ public class MCryptonHelper extends AbstractCipherHelper {
 		}
 		
 		for (int round = fromRound; round <= toRound; round++) {
-			// TODO
-			// sum += countActiveKeyBytes(round, keyDifferential.getKeyDifference(round).getDelta());
+			sum += countActiveNonLinearOperationsInKey(keyDifferential.getKeyDifference(round).getDelta());
 		}
 		
 		return sum;
 	}
 	
+	protected int countActiveNonLinearOperationsInKey(ByteArray keyDifference) {
+		int numActiveOperations = 0;
+		
+		for (int index : SBOX_AFFECTED_NIBBLES_IN_KEYS) {
+			if (keyDifference.getNibble(index) != 0) {
+				numActiveOperations++;
+			}
+		}
+		
+		return numActiveOperations;
+	}
+	
 	protected boolean shareActiveNonLinearOperationsInKey(int round, Differential deltaDifferential, Differential nablaDifferential) {
-		return deltaDifferential.keyDifferences.get(round).sharesActiveNibblesWith(
-			nablaDifferential.keyDifferences.get(round)
-		);
+		for (int index : SBOX_AFFECTED_NIBBLES_IN_KEYS) {
+			if ((deltaDifferential.keyDifferences.get(round).getDelta().getNibble(index) != 0)
+				&& (nablaDifferential.keyDifferences.get(round).getDelta().getNibble(index) != 0)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	protected boolean shareActiveNonLinearOperationsInIntermediateState(int round, Differential deltaDifferential, Differential nablaDifferential) {

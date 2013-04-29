@@ -1,13 +1,13 @@
 package de.mslab.ciphers;
 
 import de.mslab.core.ByteArray;
+import de.mslab.errors.InvalidArgumentError;
 import de.mslab.errors.InvalidKeySizeError;
 
 public abstract class MCrypton extends AbstractRoundBasedBlockCipher {
 	
 	public static final int NUM_BYTES_IN_64_BIT = 64 / Byte.SIZE;
 	public static final int NUM_ROUNDS = 12;
-	public static final int EXPANDED_KEY_LENGTH = (NUM_ROUNDS + 1) * NUM_BYTES_IN_64_BIT;
 	
 	protected static final int[] CONSTANTS = {
 		0x1111, 0x2222, 0x4444, 0x8888, 0x3333, 0x6666, 0xcccc, 0xbbbb, 0x5555, 0xaaaa, 0x7777, 0xeeee, 0xffff
@@ -32,12 +32,20 @@ public abstract class MCrypton extends AbstractRoundBasedBlockCipher {
 		3, 0, 1, 2, 
 		0, 1, 2, 3, 
 		1, 2, 3, 0
-	};
+	}; 
+	
+	protected int expandedKeySize;
+	protected int expandedRoundKeysSize;
+	protected int num16BitWordsInKey;
+	protected int num16BitWordsInState;
+	protected ByteArray roundKeys;
 	
 	public MCrypton() {
 		super();
 		numRounds = NUM_ROUNDS;
 		stateSize = NUM_BYTES_IN_64_BIT;
+		expandedRoundKeysSize = (numRounds + 1) * stateSize;
+		num16BitWordsInState = stateSize / 2;
 	}
 	
 	public boolean canInvertKeySchedule() {
@@ -60,12 +68,70 @@ public abstract class MCrypton extends AbstractRoundBasedBlockCipher {
 	 * @throws InvalidKeySizeError In case that the length of keyPart is not equivalent to the keySize.
 	 */
 	public ByteArray computeExpandedKey(ByteArray keyPart, int round) {
-		throw new Error("The subclasses of MCrypton need to implement the computeExpandedKey method. " +
-			"The class you instantiate seems to have not implemented it.");
+		if (round < 0 || round > numRounds + 1) {
+			throw new InvalidArgumentError(
+				"Round must be in interval [0," + (numRounds + 1) 
+				+ "], but was " + round + "."
+			);
+		}
+		
+		int[] K = new int[num16BitWordsInState];
+		int[] U = new int[num16BitWordsInKey];
+		int[] expandedKey = new int[expandedKeySize];
+		short[] roundKeys = new short[expandedRoundKeysSize];
+		this.roundKeys = new ByteArray(expandedRoundKeysSize);
+		
+		int[] tempU = new int[num16BitWordsInKey];
+		int tempRound = round;
+		
+		for (int i = 0, j = 0; i < num16BitWordsInKey; ++i) {
+			U[i] = ((keyPart.get(j++) << 8) & 0xFF00)
+				| (keyPart.get(j++) & 0xFF);
+			tempU[i] = U[i];
+		}
+		
+		for ( ; round <= numRounds; ++round) {
+			for (int i = 0, j = 0; i < num16BitWordsInKey; ++i) {
+				expandedKey[round * keySize + j] = (U[i] >> 8) & 0xFF;
+				j++;
+				expandedKey[round * keySize + j] = U[i] & 0xFF;
+				j++;
+			}
+			
+			transformKeyRegister(K, U, round);
+
+			for (int i = 0, j = 0; i < num16BitWordsInState; ++i) {
+				roundKeys[round * stateSize + j] = (short)((K[i] >> 8) & 0xFF);
+				j++;
+				roundKeys[round * stateSize + j] = (short)(K[i] & 0xFF);
+				j++;
+			}
+		}
+		
+		for (round = tempRound - 1; round >= 0; --round) {
+			invertTransformKeyRegister(K, tempU, round);
+			
+			for (int i = 0, j = 0; i < num16BitWordsInState; ++i) {
+				roundKeys[round * stateSize + j] = (short)((K[i] >> 8) & 0xFF);
+				j++;
+				roundKeys[round * stateSize + j] = (short)(K[i] & 0xFF);
+				j++;
+			}
+			
+			for (int i = 0, j = 0; i < num16BitWordsInKey; ++i) {
+				expandedKey[round * keySize + j] = (U[i] >> 8) & 0xFF;
+				j++;
+				expandedKey[round * keySize + j] = U[i] & 0xFF;
+				j++;
+			}
+		}
+		
+		this.roundKeys.setArray(roundKeys);
+		return new ByteArray(expandedKey);
 	}
 	
 	public ByteArray computeKeyPart(ByteArray expandedKey, int round) {
-		return expandedKey.splice(0, keySize);
+		return expandedKey.splice(round * keySize, (round + 1) * keySize);
 	}
 	
 	public ByteArray decryptRounds(ByteArray block, int fromRound, int toRound) {
@@ -129,7 +195,7 @@ public abstract class MCrypton extends AbstractRoundBasedBlockCipher {
 	}
 	
 	public boolean injectsKeyAtRoundBegin(int round) {
-		return round == 1;
+		return false;
 	}
 	
 	public boolean injectsKeyAtRoundEnd(int round) {
@@ -151,14 +217,47 @@ public abstract class MCrypton extends AbstractRoundBasedBlockCipher {
 	
 	public void setExpandedKey(ByteArray expandedKey) {
 		checkExpandedKeyLength(expandedKey.length());
-		secretKey = expandedKey;
+		ByteArray key = expandedKey.splice(0, keySize);
+		secretKey = expandKey(key);
 	}
 	
-	protected abstract ByteArray expandKey(ByteArray key);
+	protected ByteArray expandKey(ByteArray key) {
+		int[] K = new int[num16BitWordsInState];
+		int[] U = new int[num16BitWordsInKey];
+		int[] expandedKey = new int[expandedKeySize];
+		short[] roundKeys = new short[expandedRoundKeysSize];
+		this.roundKeys = new ByteArray(expandedRoundKeysSize);
+		
+		for (int i = 0, j = 0; i < num16BitWordsInKey; ++i) {
+			U[i] = ((key.get(j++) << 8) & 0xFF00)
+				| (key.get(j++) & 0xFF);
+		}
+		
+		for (int round = 0; round <= numRounds; ++round) {
+			for (int i = 0, j = 0; i < num16BitWordsInKey; ++i) {
+				expandedKey[round * keySize + j] = (U[i] >> 8) & 0xFF;
+				j++;
+				expandedKey[round * keySize + j] = U[i] & 0xFF;
+				j++;
+			}
+			
+			transformKeyRegister(K, U, round);
+
+			for (int i = 0, j = 0; i < num16BitWordsInState; ++i) {
+				roundKeys[round * stateSize + j] = (short)((K[i] >> 8) & 0xFF);
+				j++;
+				roundKeys[round * stateSize + j] = (short)(K[i] & 0xFF);
+				j++;
+			}
+		}
+		
+		this.roundKeys.setArray(roundKeys);
+		return new ByteArray(expandedKey);
+	}
 	
 	protected void checkExpandedKeyLength(int providedKeyLength) {
-		if (providedKeyLength != EXPANDED_KEY_LENGTH) {
-			throw new InvalidKeySizeError(providedKeyLength, new int[]{ EXPANDED_KEY_LENGTH });
+		if (providedKeyLength != expandedKeySize) {
+			throw new InvalidKeySizeError(providedKeyLength, new int[]{ expandedKeySize });
 		}
 	}
 	
@@ -167,6 +266,10 @@ public abstract class MCrypton extends AbstractRoundBasedBlockCipher {
 			throw new InvalidKeySizeError(providedKeyLength, new int[]{ keySize });
 		}
 	}
+
+	protected abstract void invertTransformKeyRegister(int[] K, int[] U, int round);
+	
+	protected abstract void transformKeyRegister(int[] K, int[] U, int round);
 	
 	/**
 	 * S-box substitution.

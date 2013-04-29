@@ -54,11 +54,8 @@ public abstract class PRESENT extends AbstractRoundBasedBlockCipher {
 	}
 	
 	public ByteArray computeKeyPart(ByteArray expandedKey, int round) {
-		int from = (round - 1) * keySize;
-		int numBytesToCopy = keySize;
-		
 		ByteArray result = new ByteArray(keySize);
-		result.copyBytes(expandedKey, from, 0, numBytesToCopy);
+		result.copyBytes(expandedKey, (round - 1) * keySize, 0, keySize);
 		return result;
 	}
 	

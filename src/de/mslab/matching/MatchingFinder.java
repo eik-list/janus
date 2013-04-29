@@ -403,7 +403,7 @@ public class MatchingFinder {
 	}
 	
 	private void logProgress(int matchingRound) {
-		logger.info("Searched matching for cipher {0} in round {1}. Min. num recomputed operations {2}", 
+		logger.info("Searched matching for cipher {0} in round {1}. Minimum # recomputed operations: {2}", 
 			cipher.getName(), matchingRound, result.minRecomputedOperations);
 	}
 	

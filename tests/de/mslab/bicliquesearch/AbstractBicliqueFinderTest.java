@@ -1,15 +1,11 @@
 package de.mslab.bicliquesearch;
 
 import java.io.File;
-import java.util.List;
 
 import org.junit.Test;
 
-import de.mslab.bicliquesearch.BicliqueFinder;
-import de.mslab.bicliquesearch.BicliqueFinderContext;
 import de.mslab.ciphers.helpers.BytewiseDifferentialComparator;
 import de.mslab.core.Biclique;
-import de.mslab.core.ByteArray;
 import de.mslab.diffbuilder.BytewiseDifferenceBuilder;
 import de.mslab.rendering.BicliqueRenderer;
 import de.mslab.utils.BicliqueXMLSerializer;
@@ -77,7 +73,7 @@ public abstract class AbstractBicliqueFinderTest {
 		logger.info("Found {0} biclique(s) for {1} rounds [{2} - {3}]", finder.getBicliques().size(), finderContext.cipher.getName(), finderContext.fromRound, finderContext.toRound);
 		
 		if (finder.getBicliques().size() > 0) {
-			Biclique biclique = determineBicliqueWithMinimalScore(finder.getBicliques());
+			Biclique biclique = finder.getBicliques().get(0);
 			
 			logBiclique(biclique);
 			saveBiclique(biclique);
@@ -85,41 +81,6 @@ public abstract class AbstractBicliqueFinderTest {
 		}
 		
 		tearDown();
-	}
-	
-	protected Biclique determineBicliqueWithMinimalScore(List<Biclique> bicliques) {
-		final int numBicliques = bicliques.size();
-		int score;
-		int minScore = Integer.MAX_VALUE;
-		Biclique biclique;
-		Biclique minBiclique = null;
-		
-		for (int i = 0; i < numBicliques; i++) {
-			biclique = bicliques.get(i);
-			score = determineScoreForBiclique(biclique);
-			
-			if (i == 0 || score < minScore) {
-				minScore = score;
-				logger.info("New min score: {0}", minScore);
-				minBiclique = biclique;
-			}
-		}
-		
-		return minBiclique;
-	}
-	
-	protected int determineDataComplexity(Biclique biclique) {
-		if (biclique.deltaDifferential.fromRound == 1) {
-			ByteArray plainText = biclique.nablaDifferential.getStateDifference(finderContext.fromRound - 1).getDelta();
-			return plainText.countNumActiveBits();
-		} else {
-			ByteArray cipherText = biclique.deltaDifferential.getStateDifference(finderContext.toRound).getDelta();
-			return cipherText.countNumActiveBits();
-		}
-	}
-	
-	protected int determineScoreForBiclique(Biclique biclique) {
-		return determineDataComplexity(biclique);
 	}
 	
 	protected void logBiclique(Biclique biclique) {

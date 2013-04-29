@@ -39,7 +39,7 @@ public class ByteArray implements Externalizable {
 	
 	/**
 	 * Creates a new byte array, and initializes it with values, where each value in the given array 
-	 * is treated as a byte.
+	 * is treated as a byte, i.e., only its least-significant eight bits are used. 
 	 */
 	public ByteArray(int[] values) {
 		this.array = new short[values.length];

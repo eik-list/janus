@@ -3,13 +3,15 @@ package de.mslab.diffbuilder;
 import de.mslab.ciphers.RoundBasedBlockCipher;
 import de.mslab.core.ByteArray;
 import de.mslab.core.Differential;
+import de.mslab.utils.Logger;
 
 public abstract class AbstractDifferentialBuilder implements DifferentialBuilder {
 	
 	protected RoundBasedBlockCipher cipher;
+	protected Logger logger;
 	
 	protected AbstractDifferentialBuilder() {
-		
+		logger = Logger.getLogger();
 	}
 
 	public RoundBasedBlockCipher getCipher() {
@@ -20,7 +22,8 @@ public abstract class AbstractDifferentialBuilder implements DifferentialBuilder
 		this.cipher = cipher;
 	}
 	
-	/* (non-Javadoc)
+	/* 
+	 * (non-Javadoc)
 	 * @see de.mslab.diffbuilder.DifferentialBuilder#computeBackwardDifferential(int, int, de.mslab.diffbuilder.DifferenceIterator, de.mslab.core.ByteArray)
 	 */
 	public synchronized Differential computeBackwardDifferential(int fromRound, int toRound, 
@@ -55,7 +58,7 @@ public abstract class AbstractDifferentialBuilder implements DifferentialBuilder
 			current.xor(first);
 			accumulated.or(current);
 		}
-		
+
 		accumulated.secondSecretKey = secondExpandedKey.splice(0, cipher.getKeySize());
 		return accumulated;
 	}

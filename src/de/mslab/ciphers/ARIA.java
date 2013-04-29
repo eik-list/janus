@@ -117,6 +117,9 @@ public class ARIA extends AbstractRoundBasedBlockCipher {
 		return expandKey(keyPart);
 	}
 	
+	/**
+	 * Returns the secret key from the expanded key array.
+	 */
 	public ByteArray computeKeyPart(ByteArray expandedKey, int round) {
 		return expandedKey.splice(0, keySize);
 	}

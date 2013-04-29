@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.mslab.bicliquesearch.helpers.DefaultBicliqueRater;
 import de.mslab.core.Biclique;
 import de.mslab.core.ByteArray;
 import de.mslab.core.Differential;
@@ -31,9 +32,10 @@ public class BicliqueFinder {
 	private volatile int numNablaDifferentialsMatched;
 	private long startTime;
 	
-	private Logger logger = Logger.getLogger();
-	private Object mutex = new Object();
 	private ByteArray initialKey;
+	private Logger logger = Logger.getLogger();
+	private volatile int maxBicliqueScore;
+	private Object mutex = new Object();
 	
 	public BicliqueFinder() {
 		
@@ -76,6 +78,7 @@ public class BicliqueFinder {
 	public void findBicliques() {
 		logStart();
 		initializeDifferenceBuilder();
+		initializeBicliqueRater();
 		determineNumIterations();
 		computeInitialKey();
 		
@@ -193,6 +196,14 @@ public class BicliqueFinder {
 			context.numDifferentialsPerIteration = (int)((double)maxNumBytesMemoryUsable / (double)numBytesRequiredPerDifferential);
 			context.numIterations = (int)(Math.ceil((double)numDifferentials / (double)context.numDifferentialsPerIteration));			
 		}
+	}
+	
+	private void initializeBicliqueRater() {
+		if (context.bicliqueRater == null) {
+			context.bicliqueRater = new DefaultBicliqueRater();
+		}
+		
+		maxBicliqueScore = Integer.MIN_VALUE;
 	}
 	
 	private void initializeDifferenceBuilder() {
@@ -461,6 +472,7 @@ public class BicliqueFinder {
 			Biclique biclique;
 			
 			int numDeltaDifferentials = deltaDifferentials.size();
+			int score;
 			
 			nabla: for (long j = startIndex; j < endIndex; j++) {
 				keyDifferencesIterator = context.differenceBuilder.next();
@@ -476,13 +488,22 @@ public class BicliqueFinder {
 						biclique.cipherName = context.cipher.getName();
 						biclique.dimension = context.dimension;
 						
-						synchronized (mutex) {
-							bicliques.add(biclique);
-							hasFoundBiclique = true;
-						}
+						score = context.bicliqueRater.determineScoreForBiclique(biclique);
 						
-						if (context.stopAfterFoundFirstBiclique) {
-							break nabla;
+						synchronized (mutex) {
+							if (score > maxBicliqueScore) {
+								bicliques.clear();
+							}
+							
+							if (score >= maxBicliqueScore) {
+								maxBicliqueScore = score;
+								bicliques.add(biclique);
+								hasFoundBiclique = true;
+							}
+							
+							if (context.stopAfterFoundFirstBiclique) {
+								break nabla;
+							}
 						}
 					} else if (hasFoundBiclique && context.stopAfterFoundFirstBiclique) {
 						break nabla;
@@ -514,7 +535,7 @@ public class BicliqueFinder {
 				}
 			}
 		}
-				
+			
 	}
 	
 }

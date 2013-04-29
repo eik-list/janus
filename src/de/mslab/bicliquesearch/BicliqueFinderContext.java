@@ -1,5 +1,7 @@
 package de.mslab.bicliquesearch;
 
+import de.mslab.bicliquesearch.helpers.BicliqueRater;
+import de.mslab.bicliquesearch.helpers.DefaultBicliqueRater;
 import de.mslab.ciphers.RoundBasedBlockCipher;
 import de.mslab.ciphers.helpers.DifferentialComparator;
 import de.mslab.diffbuilder.DifferenceBuilder;
@@ -44,6 +46,14 @@ public class BicliqueFinderContext {
 	 * The desired number of threads which will be used in the {@link BicliqueFinder}. Required.
 	 */
 	public int numThreads = 8;
+	/**
+	 * If the value of {@link #stopAfterFoundFirstBiclique} is set to true, this instance 
+	 * is used to determine a score for a biclique. To reduce the memory costs, the {@link BicliqueFinder}
+	 * keeps only those bicliques with a maximum score. The default value is null. If the user does not
+	 * specify an instance, the {@link BicliqueFinder} will create and assign an instance of type 
+	 * {@link DefaultBicliqueRater} for it after {@link BicliqueFinder#findBicliques()} was invoked.
+	 */
+	public BicliqueRater bicliqueRater;
 	/**
 	 * A flag which will stop the search for biciques in the given round range, if one biclique was found.
 	 */
