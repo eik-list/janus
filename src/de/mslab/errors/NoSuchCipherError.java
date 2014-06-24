@@ -13,7 +13,7 @@ public class NoSuchCipherError extends Error {
 	private static final long serialVersionUID = 5421480010405325341L;
 	
 	public NoSuchCipherError(String proposedCipherName) {
-		super("No such cipher: " + proposedCipherName + ". valid values are: " + CipherName.values().toString());
+		super("No such cipher: " + proposedCipherName);
 	}
 	
 }

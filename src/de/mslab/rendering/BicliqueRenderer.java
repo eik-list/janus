@@ -18,7 +18,7 @@ import de.mslab.core.ByteArray;
 import de.mslab.core.Difference;
 import de.mslab.core.Differential;
 
-public class BicliqueRenderer {
+public class BicliqueRenderer implements IBicliqueRenderer {
 	
 	private static final String BASE_COMPUTATION_LABEL = "Base computation";
 	private static final String DELTA_DIFFERENTIAL_LABEL = "Forward differential";
@@ -34,8 +34,8 @@ public class BicliqueRenderer {
 	private com.itextpdf.awt.geom.Rectangle differentialBounds;
 	private Document document;
 	private FileOutputStream fileOutputStream;
-
-	private static int padding = 50;
+	
+	private int padding = 50;
 	private PdfWriter writer;
 	private PdfContentByte contentByte;
 	private Rectangle pageSize;
@@ -44,28 +44,42 @@ public class BicliqueRenderer {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.mslab.rendering.IBicliqueRenderer#getDifferentialRenderer()
+	 */
+	@Override
 	public DifferentialRenderer getDifferentialRenderer() {
 		return differentialRenderer;
 	}
 	
-	/**
-	 * Returns the padding in pixels from top and left to the leftmost differential. 
+	/* (non-Javadoc)
+	 * @see de.mslab.rendering.IBicliqueRenderer#getPadding()
 	 */
-	public static int getPadding() {
+	@Override
+	public int getPadding() {
 		return padding;
 	}
 	
-	/**
-	 * Sets the padding in pixels.
+	/* (non-Javadoc)
+	 * @see de.mslab.rendering.IBicliqueRenderer#setPadding(int)
 	 */
-	public static void setPadding(int padding) {
-		BicliqueRenderer.padding = padding;
+	@Override
+	public void setPadding(int padding) {
+		this.padding = padding;
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.mslab.rendering.IBicliqueRenderer#setDifferentialRenderer(de.mslab.rendering.DifferentialRenderer)
+	 */
+	@Override
 	public void setDifferentialRenderer(DifferentialRenderer differentialRenderer) {
 		this.differentialRenderer = differentialRenderer;
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.mslab.rendering.IBicliqueRenderer#renderBiclique(java.lang.String, de.mslab.core.Biclique, de.mslab.ciphers.RoundBasedBlockCipher)
+	 */
+	@Override
 	public void renderBiclique(String pathname, Biclique biclique, RoundBasedBlockCipher cipher) 
 		throws IOException, DocumentException {
 		if (this.differentialRenderer == null) {
@@ -91,14 +105,18 @@ public class BicliqueRenderer {
 		differentialBounds.x += padding;
 		differentialBounds.y += padding;
 		
-		float sizeX = (float)differentialBounds.x * numDifferentials + 2 * padding;
-		pageSize = new Rectangle(sizeX, (float)differentialBounds.y);
+		final float sizeX = (float)differentialBounds.x * numDifferentials + 2 * padding;
+		final float sizeY = (float)differentialBounds.y + padding;
+		pageSize = new Rectangle(sizeX, sizeY);
 	}
 	
 	private void renderDifferentials(Biclique biclique, RoundBasedBlockCipher cipher) throws DocumentException, IOException {
 		differentialRenderer.setContentByte(contentByte);
 		
-		Point position = new Point(differentialBounds.x - padding, document.getPageSize().getHeight() - padding);
+		Point position = new Point(
+			padding, 
+			document.getPageSize().getHeight() - padding
+		);
 		Differential emptyDifferential = createEmptyDifferential(biclique.deltaDifferential, cipher);
 		differentialRenderer.renderDifferential(
 			emptyDifferential, position, BASE_COMPUTATION_LABEL, simpleDifferentialActiveBytesColor, simpleDifferentialActiveBytesColor

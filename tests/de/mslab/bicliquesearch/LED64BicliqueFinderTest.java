@@ -2,7 +2,7 @@ package de.mslab.bicliquesearch;
 
 import org.junit.Test;
 
-import de.mslab.bicliquesearch.helpers.LEDBicliqueRater;
+import de.mslab.bicliquesearch.helpers.LED64BicliqueRater;
 import de.mslab.ciphers.LED64;
 import de.mslab.ciphers.helpers.LEDHelper;
 import de.mslab.diffbuilder.NibblewiseDifferenceBuilder;
@@ -18,8 +18,8 @@ public class LED64BicliqueFinderTest extends AbstractBicliqueFinderTest {
 		finderContext.dimension = 8;
 		finderContext.differenceBuilder = new NibblewiseDifferenceBuilder();
 		finderContext.comparator = new LEDHelper();
-		finderContext.bicliqueRater = new LEDBicliqueRater();
-		maxNumBicliqueRounds = 8;
+		finderContext.bicliqueRater = new LED64BicliqueRater();
+		maxNumBicliqueRounds = 4;
 		
 		BicliqueDifferentialRenderer differentialRenderer = new BicliqueDifferentialRenderer();
 		int cellSize = 10;
@@ -29,7 +29,7 @@ public class LED64BicliqueFinderTest extends AbstractBicliqueFinderTest {
 	
 	@Test
 	public void testFindBicliques() {
-		find(13,16);
+		find(17,20);
 	}
 	
 	@Test

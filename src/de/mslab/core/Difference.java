@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
  * This class represents a difference, that is a {@link ByteArray}.
  * 
  */
-public class Difference implements Externalizable {
+public class Difference implements Externalizable,Cloneable {
 	
 	private ByteArray delta;
 	
@@ -84,21 +84,24 @@ public class Difference implements Externalizable {
 	}
 	
 	public boolean equals(Difference other) {
-		return delta.equals(other.delta);
+		if (other == null) {
+			return false;
+		} else {
+			return delta.equals(other.delta);
+		}
 	}
 	
 	public boolean equals(Object object) {
 		try {
-			Differential other = (Differential)object;
-			
-			if (other == null) {
-				return false;
-			} else {
-				return equals(other);
-			}
+			return equals((Difference)object);
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public int hashCode() {
+		assert false : "hashCode not implemented";
+		return -1;
 	}
 	
 	@XmlElement

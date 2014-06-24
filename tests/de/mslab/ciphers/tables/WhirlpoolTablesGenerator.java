@@ -5,7 +5,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.mslab.ciphers.WhirlpoolCipher;
-import de.mslab.utils.Formatter;
 import de.mslab.utils.GaloisField;
 
 /**
@@ -77,8 +76,8 @@ public class WhirlpoolTablesGenerator extends CipherTablesGeneratorBase {
 		logTable("INVERSE_SBOX", INVERSE_SBOX);
 	}
 	
-	@Test
-	public void computeRoundConstants() {
+	@BeforeClass
+	public static void computeRoundConstants() {
 		int numColumns = WhirlpoolCipher.NUM_COLUMNS_IN_STATE;
 		int numRounds = WhirlpoolCipher.NUM_ROUNDS;
 		ROUND_CONSTANTS = new int[numRounds][numColumns];
@@ -88,7 +87,7 @@ public class WhirlpoolTablesGenerator extends CipherTablesGeneratorBase {
 				ROUND_CONSTANTS[round - 1][column] = SBOX[8 * (round - 1) + column];
 			}
 			
-			logger.info("{ {0} }, ", Formatter.byteArrayToHexStrings(ROUND_CONSTANTS[round - 1]));
+			//logger.info("{ {0} }, ", Formatter.byteArrayToHexStrings(ROUND_CONSTANTS[round - 1]));
 		}
 	}
 	

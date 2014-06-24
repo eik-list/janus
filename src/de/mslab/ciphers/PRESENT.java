@@ -35,14 +35,14 @@ public abstract class PRESENT extends AbstractRoundBasedBlockCipher {
 	}
 	
 	public boolean canInvertKeySchedule() {
-		return true;
+		return false;
 	}
 	
 	public ByteArray computeExpandedKey(ByteArray keyPart, int round) {
 		checkKeySize(keyPart.length());
 		secretKey = new ByteArray((numRounds + 1) * keySize);
 		
-		if (round <= numRounds) {
+		if (round <= numRounds + 1) {
 			secretKey = expandKeyForwards(secretKey, keyPart.clone(), round);
 		}
 		

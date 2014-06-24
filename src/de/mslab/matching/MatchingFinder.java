@@ -43,10 +43,6 @@ public class MatchingFinder {
 	
 	private MatchingDifferentialBuilder matchingDifferentialBuilder;
 	
-	public MatchingFinder() {
-		
-	}
-	
 	/**
 	 * Calculates the complexity for the matching part of a biclique attack on a given cipher
 	 * on those rounds which are not covered by a given biclique.
@@ -111,7 +107,7 @@ public class MatchingFinder {
 		
 		keys[0][0] = delta.firstSecretKey.clone();
 		keys[i][0] = delta.secondSecretKey.clone();
-		keys[0][j] = nabla.secondSecretKey.clone();
+		keys[0][j] = nabla.firstSecretKey.clone();
 		
 		keys[0][0] = computeExpandedKeyFromSecretKey(keys[0][0]);
 		keys[i][0] = computeExpandedKeyFromSecretKey(keys[i][0]);
@@ -260,9 +256,9 @@ public class MatchingFinder {
 	}
 	
 	private void computeDifferentialsForFixedMatching() {
-		int[] matchingStateActiveBitPositions = findActiveBitPositionsInDifference(context.matchingStateDifference);
-		DifferenceIterator matchingBitsIterator = new BitwiseDifferenceIterator(
-			emptyState, context.numMatchingBits, matchingStateActiveBitPositions
+		final int[] matchingStateActiveBitPositions = findActiveBitPositionsInDifference(context.matchingStateDifference);
+		final DifferenceIterator matchingBitsIterator = new BitwiseDifferenceIterator(
+			emptyState, matchingStateActiveBitPositions.length, matchingStateActiveBitPositions
 		);
 		
 		deltaDifferenceIterator.reset();
@@ -278,13 +274,10 @@ public class MatchingFinder {
 		);
 		
 		computeDifferentialsFromMiddleAndMerge(context.matchingRound, matchingBitsIterator, p_to_v, s_to_v);
+		logProgress(context.matchingRound);
 	}
 	
 	private void computeDifferentialsForAllRoundsAndBits() {
-		long numStateDifferences = matchingDifferenceBuilder.initializeAndGetNumDifferences(
-			context.numMatchingBits, cipher.getStateSize()
-		);
-		
 		for (int matchingRound = result.matchingFromRound; matchingRound < result.matchingToRound; matchingRound++) {
 			deltaDifferenceIterator.reset();
 			nablaDifferenceIterator.reset();
@@ -300,6 +293,10 @@ public class MatchingFinder {
 			
 			//logger.info("p -> v {0}", p_to_v);
 			//logger.info("s <- v {0}", s_to_v);
+			
+			long numStateDifferences = matchingDifferenceBuilder.initializeAndGetNumDifferences(
+				context.numMatchingBits, cipher.getStateSize()
+			);
 			
 			for (int i = 0; i < numStateDifferences; i++) {
 				computeDifferentialsFromMiddleAndMerge(matchingRound, matchingDifferenceBuilder.next(), p_to_v, s_to_v);
@@ -403,12 +400,12 @@ public class MatchingFinder {
 	}
 	
 	private void logProgress(int matchingRound) {
-		logger.info("Searched matching for cipher {0} in round {1}. Minimum # recomputed operations: {2}", 
+		logger.info("Searched matching for {0} in round {1}. Minimum # recomputed operations: {2}", 
 			cipher.getName(), matchingRound, result.minRecomputedOperations);
 	}
 	
 	private void logStart() {
-		logger.info("Started search for optimal matching for cipher {2} in round interval [{0} ... {1}]", 
+		logger.info("Started search for optimal matching for {2} in round interval [{0} ... {1}]", 
 			result.matchingFromRound, result.matchingToRound, cipher.getName());
 	}
 	

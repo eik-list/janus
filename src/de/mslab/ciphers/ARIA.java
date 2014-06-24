@@ -295,7 +295,7 @@ public class ARIA extends AbstractRoundBasedBlockCipher {
 	}
 	
 	protected ByteArray invertSubstitute(ByteArray state, int round) {
-		boolean isOddRound = (round % 2) == 1;
+		boolean isOddRound = (round >= 0) && (round % 2) == 1;
 		
 		if (isOddRound) {
 			return substituteEven(state);
@@ -305,7 +305,7 @@ public class ARIA extends AbstractRoundBasedBlockCipher {
 	}
 	
 	protected ByteArray substitute(ByteArray state, int round) {
-		boolean isOddRound = (round % 2) == 1;
+		boolean isOddRound = (round >= 0) && (round % 2) == 1;
 		
 		if (isOddRound) {
 			return substituteOdd(state);

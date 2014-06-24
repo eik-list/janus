@@ -6,14 +6,16 @@ import de.mslab.errors.InvalidArgumentError;
 /**
  * Computes in increasing manner all n-bit values with less or equal 
  * a maximum number of '1' bit, while all other bits are zero. 
- * 
  */
-public class BitwiseDifferenceBuilder extends AbstractDifferenceBuilder {
+public class BitwiseDifferenceBuilder implements DifferenceBuilder {
 	
-	/**
-	 * Default number of return difference values.
-	 */
-	public static final long DEFAULT_NUM_RESULTS = 100L;
+	private int dimension;
+	private int index;
+	private int numBytes;
+	private int numResults;
+	
+	private int[] bitPositions;
+	private ByteArray value; 
 	
 	public long initializeAndGetNumDifferences(int dimension, int numBytes) throws InvalidArgumentError {
 		if (dimension > 8 * numBytes) {
@@ -26,49 +28,28 @@ public class BitwiseDifferenceBuilder extends AbstractDifferenceBuilder {
 		}
 		
 		this.dimension = dimension;
-		this.numUnits = numBytes * Byte.SIZE;
+		this.index = 0;
 		this.numBytes = numBytes;
-		this.weight = dimension; // d = w
-		this.numResults = DEFAULT_NUM_RESULTS; // MathUtil.computeBinomialCoefficient(numBytes, weight);
-		
+		this.numResults = numBytes * Byte.SIZE - dimension + 1;
 		this.value = new ByteArray(this.numBytes);
-		this.bitPositions = new int[dimension];
-		
 		return numResults;
 	}
 	
 	public synchronized DifferenceIterator next() {
-		if (isFirst) {
-			isFirst = false;
-			return storeNextValue();
+		if (index >= numResults) {
+			return null;
 		}
 		
+		bitPositions = new int[dimension];
 		value = new ByteArray(numBytes);
-		int bitPosition;
-		int[] setBitPositions = new int[numUnits];
-		this.bitPositions = new int[dimension];
 		
 		for (int i = 0; i < dimension; i++) {
-			bitPosition = (int)(Math.random() * numUnits);
-			
-			if (setBitPositions[bitPosition] == 1) {
-				bitPosition = 0;
-				
-				while (setBitPositions[bitPosition] == 1) {
-					bitPosition++;
-				}
-			}
-			
-			setBitPositions[bitPosition] = 1;
-			this.bitPositions[i] = bitPosition;
-			value.setBit(bitPosition, true);
+			bitPositions[i] = index + i;
+			value.setBit(index + i, true);
 		}
 		
+		index++;
 		return storeNextValue();
-	}
-	
-	public void setNumResults(long numResults) {
-		this.numResults = numResults;
 	}
 	
 	protected void setValueAtPosition(int position, boolean v) {
@@ -77,6 +58,14 @@ public class BitwiseDifferenceBuilder extends AbstractDifferenceBuilder {
 	
 	protected DifferenceIterator storeNextValue() {
 		return new BitwiseDifferenceIterator(value, dimension, bitPositions);
+	}
+	
+	public int getCurrentWeight() {
+		return this.dimension;
+	}
+	
+	public long getNumResults() {
+		return this.numResults;
 	}
 	
 }

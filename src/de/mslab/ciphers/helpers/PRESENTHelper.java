@@ -42,7 +42,7 @@ public class PRESENTHelper extends AbstractCipherHelper {
 			}
 		}
 		
-		for (int round = fromRound; round < toRound; round++) {
+		for (int round = fromRound; round <= toRound; round++) {
 			if (shareActiveNonLinearOperationsInIntermediateState(round, deltaDifferential, nablaDifferential)) {
 				return true;
 			}

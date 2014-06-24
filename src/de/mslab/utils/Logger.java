@@ -16,19 +16,19 @@ public class Logger {
 	/**
 	 * Indicates if this logger instance prints info messages.
 	 */
-	public boolean infoEnabled = true;
+	public boolean isInfoEnabled = true;
 	/**
 	 * Indicates if this logger instance prints error messages.
 	 */
-	public boolean errorEnabled = true;
+	public boolean isErrorEnabled = true;
 	/**
 	 * Indicates if this logger instance prints debug messages.
 	 */
-	public boolean debugEnabled = true;
+	public boolean isDebugEnabled = true;
 	/**
 	 * Indicates if this logger instance prints warning messages.
 	 */
-	public boolean warningsEnabled = true; 
+	public boolean isWarningsEnabled = true; 
 	
 	/**
 	 * Accessor for a singleton logger instance.
@@ -42,7 +42,7 @@ public class Logger {
 	 * Prints a message at debug level.
 	 */
 	public void debug(Object message) {
-		if (debugEnabled) {
+		if (isDebugEnabled) {
 			print(DEBUG, paramToString(message));
 		}
 	}
@@ -51,7 +51,7 @@ public class Logger {
 	 * Prints a message at debug level.
 	 */
 	public void debug(String message, Object first) {
-		if (debugEnabled) {
+		if (isDebugEnabled) {
 			print(DEBUG, replace(message, new Object[]{first}));
 		}
 	}
@@ -60,7 +60,7 @@ public class Logger {
 	 * Prints a message at debug level.
 	 */
 	public void debug(String message, Object first, Object second) {
-		if (debugEnabled) {
+		if (isDebugEnabled) {
 			print(DEBUG, replace(message, new Object[]{first, second}));
 		}
 	}
@@ -69,7 +69,7 @@ public class Logger {
 	 * Prints a message at debug level.
 	 */
 	public void debug(String message, Object first, Object second, Object third) {
-		if (debugEnabled) {
+		if (isDebugEnabled) {
 			print(DEBUG, replace(message, new Object[]{first, second, third}));
 		}
 	}
@@ -78,7 +78,7 @@ public class Logger {
 	 * Prints a message at debug level.
 	 */
 	public void debug(String message, Object first, Object second, Object third, Object fourth) {
-		if (debugEnabled) {
+		if (isDebugEnabled) {
 			print(DEBUG, replace(message, new Object[]{first, second, third, fourth}));
 		}
 	}
@@ -87,7 +87,7 @@ public class Logger {
 	 * Prints a message at debug level.
 	 */
 	public void debug(String message, Object[] params) {
-		if (debugEnabled) {
+		if (isDebugEnabled) {
 			print(DEBUG, replace(message, params));
 		}
 	}
@@ -96,7 +96,7 @@ public class Logger {
 	 * Prints a message at error level.
 	 */
 	public void error(Object message) {
-		if (errorEnabled) {
+		if (isErrorEnabled) {
 			print(ERROR, paramToString(message));
 		}
 	}
@@ -105,7 +105,7 @@ public class Logger {
 	 * Prints a message at error level.
 	 */
 	public void error(String message, Object first) {
-		if (errorEnabled) {
+		if (isErrorEnabled) {
 			print(ERROR, replace(message, new Object[]{first}));
 		}
 	}
@@ -114,7 +114,7 @@ public class Logger {
 	 * Prints a message at error level.
 	 */
 	public void error(String message, Object first, Object second) {
-		if (errorEnabled) {
+		if (isErrorEnabled) {
 			print(ERROR, replace(message, new Object[]{first, second}));
 		}
 	}
@@ -123,7 +123,7 @@ public class Logger {
 	 * Prints a message at error level.
 	 */
 	public void error(String message, Object first, Object second, Object third) {
-		if (errorEnabled) {
+		if (isErrorEnabled) {
 			print(ERROR, replace(message, new Object[]{first, second, third}));
 		}
 	}
@@ -132,7 +132,7 @@ public class Logger {
 	 * Prints a message at error level.
 	 */
 	public void error(String message, Object first, Object second, Object third, Object fourth) {
-		if (errorEnabled) {
+		if (isErrorEnabled) {
 			print(ERROR, replace(message, new Object[]{first, second, third, fourth}));
 		}
 	}
@@ -141,7 +141,7 @@ public class Logger {
 	 * Prints a message at error level.
 	 */
 	public void error(String message, Object[] params) {
-		if (errorEnabled) {
+		if (isErrorEnabled) {
 			print(ERROR, replace(message, params));
 		}
 	}
@@ -150,7 +150,7 @@ public class Logger {
 	 * Prints a message at info level.
 	 */
 	public void info(Object message) {
-		if (infoEnabled) {
+		if (isInfoEnabled) {
 			print(INFO, paramToString(message));
 		}
 	}
@@ -159,7 +159,7 @@ public class Logger {
 	 * Prints a message at info level.
 	 */
 	public void info(String message, Object first) {
-		if (infoEnabled) {
+		if (isInfoEnabled) {
 			print(INFO, replace(message, new Object[]{first}));
 		}
 	}
@@ -168,7 +168,7 @@ public class Logger {
 	 * Prints a message at info level.
 	 */
 	public void info(String message, Object first, Object second) {
-		if (infoEnabled) {
+		if (isInfoEnabled) {
 			print(INFO, replace(message, new Object[]{first, second}));
 		}
 	}
@@ -177,7 +177,7 @@ public class Logger {
 	 * Prints a message at info level.
 	 */
 	public void info(String message, Object first, Object second, Object third) {
-		if (infoEnabled) {
+		if (isInfoEnabled) {
 			print(INFO, replace(message, new Object[]{first, second, third}));
 		}
 	}
@@ -186,7 +186,7 @@ public class Logger {
 	 * Prints a message at info level.
 	 */
 	public void info(String message, Object first, Object second, Object third, Object fourth) {
-		if (infoEnabled) {
+		if (isInfoEnabled) {
 			print(INFO, replace(message, new Object[]{first, second, third, fourth}));
 		}
 	}
@@ -195,7 +195,7 @@ public class Logger {
 	 * Prints a message at info level.
 	 */
 	public void info(String message, Object first, Object second, Object third, Object fourth, Object fifth) {
-		if (infoEnabled) {
+		if (isInfoEnabled) {
 			print(INFO, replace(message, new Object[]{first, second, third, fourth, fifth}));
 		}
 	}
@@ -204,7 +204,7 @@ public class Logger {
 	 * Prints a message at info level.
 	 */
 	public void info(String message, Object[] params) {
-		if (infoEnabled) {
+		if (isInfoEnabled) {
 			print(INFO, replace(message, params));
 		}
 	}
@@ -213,7 +213,7 @@ public class Logger {
 	 * Prints a message at warn level.
 	 */
 	public void warn(Object message) {
-		if (warningsEnabled) {
+		if (isWarningsEnabled) {
 			print(WARNING, paramToString(message));
 		}
 	}
@@ -222,7 +222,7 @@ public class Logger {
 	 * Prints a message at warn level.
 	 */
 	public void warn(String message, Object first) {
-		if (warningsEnabled) {
+		if (isWarningsEnabled) {
 			print(WARNING, replace(message, new Object[]{first}));
 		}
 	}
@@ -231,7 +231,7 @@ public class Logger {
 	 * Prints a message at warn level.
 	 */
 	public void warn(String message, Object first, Object second) {
-		if (warningsEnabled) {
+		if (isWarningsEnabled) {
 			print(WARNING, replace(message, new Object[]{first, second}));
 		}
 	}
@@ -240,7 +240,7 @@ public class Logger {
 	 * Prints a message at warn level.
 	 */
 	public void warn(String message, Object first, Object second, Object third) {
-		if (warningsEnabled) {
+		if (isWarningsEnabled) {
 			print(WARNING, replace(message, new Object[]{first, second, third}));
 		}
 	}
@@ -249,7 +249,7 @@ public class Logger {
 	 * Prints a message at warn level.
 	 */
 	public void warn(String message, Object first, Object second, Object third, Object fourth) {
-		if (warningsEnabled) {
+		if (isWarningsEnabled) {
 			print(WARNING, replace(message, new Object[]{first, second, third, fourth}));
 		}
 	}
@@ -258,7 +258,7 @@ public class Logger {
 	 * Prints a message at warn level.
 	 */
 	public void warn(String message, Object[] params) {
-		if (warningsEnabled) {
+		if (isWarningsEnabled) {
 			print(WARNING, replace(message, params));
 		}
 	}

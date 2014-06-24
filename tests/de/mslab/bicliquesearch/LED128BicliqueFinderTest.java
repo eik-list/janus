@@ -1,5 +1,8 @@
 package de.mslab.bicliquesearch;
 
+import org.junit.Test;
+
+import de.mslab.bicliquesearch.helpers.LED128BicliqueRater;
 import de.mslab.ciphers.LED128;
 import de.mslab.ciphers.helpers.LEDHelper;
 import de.mslab.diffbuilder.NibblewiseDifferenceBuilder;
@@ -15,12 +18,23 @@ public class LED128BicliqueFinderTest extends AbstractBicliqueFinderTest {
 		finderContext.dimension = 8;
 		finderContext.differenceBuilder = new NibblewiseDifferenceBuilder();
 		finderContext.comparator = new LEDHelper();
+		finderContext.bicliqueRater = new LED128BicliqueRater();
 		
-		maxNumBicliqueRounds = 16;
+		maxNumBicliqueRounds = 8;
 		
 		BicliqueDifferentialRenderer differentialRenderer = new BicliqueDifferentialRenderer();
 		differentialRenderer.setStateRenderer(new LEDStateRenderer(10));
 		renderer.setDifferentialRenderer(differentialRenderer);
+	}
+
+	@Test
+	public void testFindBicliques() {
+		find(25,32);
+	}
+	
+	@Test
+	public void testFindBicliquesAtStart() {
+		
 	}
 	
 }

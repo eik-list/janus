@@ -22,14 +22,15 @@ public class MatchingPhaseRenderer {
 	protected static final String BACKWARD_MATCHING = "Backward matching";
 	
 	protected static final BaseColor simpleDifferentialActiveBytesColor = BaseColor.GRAY; 
-	protected static final BaseColor backwardDifferentialActiveBytesColor = new BaseColor(0xC1, 0x9E, 0xD9); 
+	protected static final BaseColor backwardDifferentialActiveBytesColor = new BaseColor(0xFF, 0, 0); //0xC1, 0x9E, 0xD9); 
 	protected static final BaseColor forwardDifferentialActiveBytesColor = new BaseColor(0x2B, 0x6D, 0xAA); 
 	
 	protected static final int numDifferentials = 2;
 	protected static final int padding = 50;
 	
 	protected DifferentialRenderer differentialRenderer = new MatchingDifferentialRenderer();
-	protected com.itextpdf.awt.geom.Rectangle differentialBounds;
+	protected com.itextpdf.awt.geom.Rectangle firstDifferentialBounds;
+	protected com.itextpdf.awt.geom.Rectangle secondDifferentialBounds;
 	protected Document document;
 	protected FileOutputStream fileOutputStream;
 	protected PdfWriter writer;
@@ -58,40 +59,38 @@ public class MatchingPhaseRenderer {
 	
 	protected void setSize(MatchingFinderResult result, RoundBasedBlockCipher cipher) {
 		differentialRenderer.setUp(cipher);
-		Point maxBounds = new Point();
-		differentialBounds = differentialRenderer.determineSize(result.p_mergedto_v, result.bestMatchingRound);
-		maxBounds.x = differentialBounds.x;
-		maxBounds.y = differentialBounds.y;
-		differentialBounds = differentialRenderer.determineSize(result.s_mergedto_v, result.bestMatchingRound);
+		firstDifferentialBounds = differentialRenderer.determineSize(result.p_mergedto_v, result.bestMatchingRound, true);
+		secondDifferentialBounds = differentialRenderer.determineSize(result.s_mergedto_v, result.bestMatchingRound, false);
 		
-		if (differentialBounds.x < maxBounds.x) {
-			differentialBounds.x = maxBounds.x;
-		}
+		float maxBoundsX = (firstDifferentialBounds.x >= secondDifferentialBounds.x) ?
+			(float)firstDifferentialBounds.x :
+			(float)secondDifferentialBounds.x;
 		
-		if (differentialBounds.y < maxBounds.y) {
-			differentialBounds.y = maxBounds.y;
-		}
-		
-		differentialBounds.y += padding;
-		differentialBounds.x += 2 * padding;
-		
-		float sizeY = (float)differentialBounds.y * numDifferentials + 2 * padding;
-		pageSize = new Rectangle((float)differentialBounds.x, sizeY);
+		pageSize = new Rectangle(
+			(float)(padding + maxBoundsX + padding), 
+			(float)(padding + firstDifferentialBounds.y + padding + secondDifferentialBounds.y + padding)
+		);
 	}
 	
 	protected void renderDifferentials(MatchingFinderResult result, RoundBasedBlockCipher cipher) throws DocumentException, IOException {
 		differentialRenderer.setUp(cipher);
 		differentialRenderer.setContentByte(contentByte);
 		
-		Point position = new Point(padding, differentialBounds.y);
-		differentialRenderer.renderDifferential(
-			result.s_mergedto_v, position, BACKWARD_MATCHING, simpleDifferentialActiveBytesColor, backwardDifferentialActiveBytesColor
+		final Point position = new Point(
+			padding, 
+			padding + secondDifferentialBounds.y
 		);
-		position.y += differentialBounds.y;
 		differentialRenderer.renderDifferential(
-			result.p_mergedto_v, position, FORWARD_MATCHING, simpleDifferentialActiveBytesColor, forwardDifferentialActiveBytesColor
+			result.s_mergedto_v, position, BACKWARD_MATCHING, 
+			backwardDifferentialActiveBytesColor, backwardDifferentialActiveBytesColor
 		);
 		
+		position.y = padding + firstDifferentialBounds.y + padding + secondDifferentialBounds.y;
+
+		differentialRenderer.renderDifferential(
+			result.p_mergedto_v, position, FORWARD_MATCHING, 
+			forwardDifferentialActiveBytesColor, forwardDifferentialActiveBytesColor
+		);
 		differentialRenderer.tearDown();
 	}
 	

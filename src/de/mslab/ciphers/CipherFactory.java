@@ -17,7 +17,7 @@ public class CipherFactory {
 		ARIA256, BKSQ96, BKSQ144, BKSQ192, KHAZAD, 
 		KLEIN64, KLEIN80, KLEIN96, LBLOCK, 
 		LED64, LED80, LED96, LED112, LED128, 
-		MCRYPTON64, MCRYPTON96, MCRYPTON128, PRESENT80, PRESENT128, 
+		PRESENT80, PRESENT128, 
 		PRINCE, PRINCECORE, SERPENT, SQUARE, 
 		THREEFISH256, THREEFISH512, THREEFISH1024, WHIRLPOOLCIPHER
 	};
@@ -61,9 +61,6 @@ public class CipherFactory {
 			case LED112: return new LED112();
 			case LED128: return new LED128();
 			
-			case MCRYPTON64: return new MCrypton64();
-			case MCRYPTON96: return new MCrypton96();
-			case MCRYPTON128: return new MCrypton128();
 			case PRESENT80: return new PRESENT80();
 			case PRESENT128: return new PRESENT128();
 			

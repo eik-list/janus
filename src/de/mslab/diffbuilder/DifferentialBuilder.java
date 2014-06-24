@@ -14,7 +14,4 @@ public interface DifferentialBuilder {
 	Differential computeForwardDifferential(int fromRound, int toRound,
 		DifferenceIterator keyDifferenceIterator, ByteArray firstExpandedKey, int keyDifferenceRound);
 	
-	void computeBackwardDifferential(Differential differential, ByteArray startingState);
-	void computeForwardDifferential(Differential differential, ByteArray startingState);
-	
 }

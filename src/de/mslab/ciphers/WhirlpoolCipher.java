@@ -463,7 +463,6 @@ public class WhirlpoolCipher extends AbstractRoundBasedBlockCipher {
 			}
 		}
 		
-		state = newState.clone();
 		return newState;
 	}
 	
@@ -500,7 +499,6 @@ public class WhirlpoolCipher extends AbstractRoundBasedBlockCipher {
 			}
 		}
 		
-		state = newState.clone();
 		return newState;
 	}
 	

@@ -31,13 +31,16 @@ abstract class AbstractDifferentialRenderer implements DifferentialRenderer {
 	protected Point currentStatePosition;
 	protected Point nextStatePosition;
 	
+	protected float defaultLineWidth = 0.1f;
+	protected boolean renderOnlyActiveTrails = false;
+	
 	public PdfContentByte getContentByte() {
 		return contentByte;
 	}
 	
 	public void setContentByte(PdfContentByte contentByte) {
 		this.contentByte = contentByte;
-		this.contentByte.setLineWidth(0.1f);
+		this.contentByte.setLineWidth(defaultLineWidth );
 	}
 	
 	public StateRenderer getStateRenderer() {
@@ -46,6 +49,14 @@ abstract class AbstractDifferentialRenderer implements DifferentialRenderer {
 	
 	public void setStateRenderer(StateRenderer stateRenderer) {
 		this.stateRenderer = stateRenderer;
+	}
+	
+	public boolean getRenderOnlyActiveTrails() {
+		return renderOnlyActiveTrails;
+	}
+	
+	public void setRenderOnlyActiveTrails(boolean renderOnlyActiveTrails) {
+		this.renderOnlyActiveTrails = renderOnlyActiveTrails;
 	}
 	
 	public void setUp(RoundBasedBlockCipher cipher) {
@@ -101,8 +112,13 @@ abstract class AbstractDifferentialRenderer implements DifferentialRenderer {
 		return result;
 	}
 	
+	public Rectangle determineSize(Differential p_mergedto_v, int intermediateMatchingRound, boolean renderBeginning) {
+		return determineSize(p_mergedto_v, intermediateMatchingRound);
+	}
+	
 	public void renderDifferential(Differential differential, Point position, String label, 
 		BaseColor activeStateColor, BaseColor activeKeyColor) throws DocumentException, IOException {
+		
 		this.differential = differential;
 		this.currentStatePosition = (Point)position.clone();
 		this.nextStatePosition = (Point)position.clone();

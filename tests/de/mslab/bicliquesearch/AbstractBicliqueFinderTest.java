@@ -8,6 +8,7 @@ import de.mslab.ciphers.helpers.BytewiseDifferentialComparator;
 import de.mslab.core.Biclique;
 import de.mslab.diffbuilder.BytewiseDifferenceBuilder;
 import de.mslab.rendering.BicliqueRenderer;
+import de.mslab.rendering.IBicliqueRenderer;
 import de.mslab.utils.BicliqueXMLSerializer;
 import de.mslab.utils.Logger;
 
@@ -19,7 +20,7 @@ public abstract class AbstractBicliqueFinderTest {
 	protected int maxNumBicliqueRounds = 4;
 	
 	protected BicliqueXMLSerializer serializer = new BicliqueXMLSerializer();
-	protected BicliqueRenderer renderer = new BicliqueRenderer();
+	protected IBicliqueRenderer renderer = new BicliqueRenderer();
 	protected String xmlPath = "results/xml/";
 	protected String pdfPath = "results/biclique/";
 	

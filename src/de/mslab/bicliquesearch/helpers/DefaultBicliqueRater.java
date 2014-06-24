@@ -20,7 +20,9 @@ public class DefaultBicliqueRater implements BicliqueRater {
 	 * @return The statesize minus the logarithm of the maximum number of required plaintext-ciphertext pairs.
 	 */
 	public int determineScoreForBiclique(Biclique biclique) {
-		return determineDataComplexity(biclique);
+		final int numBits = biclique.deltaDifferential.getStateDifference(biclique.deltaDifferential.fromRound).length() 
+			* Byte.SIZE;
+		return numBits - determineDataComplexity(biclique);
 	}
 	
 	protected int determineDataComplexity(Biclique biclique) {

@@ -12,6 +12,8 @@ import de.mslab.core.Biclique;
 
 public class BicliqueXMLParserTest {
 	
+	private static final String PATH = "results/xml/";
+	
 	private static Biclique biclique;
 	private static Logger logger = Logger.getLogger();
 	private static BicliqueXMLParser parser;
@@ -37,29 +39,8 @@ public class BicliqueXMLParserTest {
 		createBiclique("BKSQ144_11_14.xml");
 	}
 	
-	@Test
-	public final void testParseLED64StartBiclique() throws Exception {
-		createBiclique("LED64_2_7.xml");
-	}
-	
-	@Test
-	public final void testParseLED64EndBiclique() throws Exception {
-		createBiclique("LED64_25_31.xml");
-	}
-	
-	@Test
-	public final void testParseLED128StartBiclique() throws Exception {
-		createBiclique("LED128_2_15.xml");
-	}
-	
-	@Test
-	public final void testParseLED128EndBiclique() throws Exception {
-		createBiclique("LED128_37_48.xml");
-	}
-	
 	private void createBiclique(String filename) throws JAXBException {
-		String path = "results/xml/";
-		File file = new File(path + filename);
+		File file = new File(PATH + filename);
 		biclique = parser.parseXML(file);
 		logger.info(biclique);
 	}

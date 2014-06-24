@@ -14,7 +14,7 @@ import de.mslab.errors.InvalidArgumentError;
  * Represents an abstraction of a byte array as used in many parts of this framework.
  * 
  */
-public class ByteArray implements Externalizable {
+public class ByteArray implements Externalizable,Cloneable {
 	
 	protected short[] array = new short[0];
 	
@@ -354,6 +354,11 @@ public class ByteArray implements Externalizable {
 		}
 	}
 	
+	public int hashCode() {
+		assert false : "hashCode not implemented";
+		return -1;
+	}
+	
 	/**
 	 * Returns the byte value at the given position.
 	 */
@@ -559,7 +564,8 @@ public class ByteArray implements Externalizable {
 	}
 	
 	public void setBitAtEnd(int bitPosition, boolean value) {
-		int bytePosition = array.length - (int)Math.ceil(bitPosition / 8) - 1;
+		int bytePosition = array.length 
+			- (int)Math.ceil((double)(bitPosition + 1) / Byte.SIZE);
 		
 		if (bytePosition < 0 || bytePosition >= array.length) {
 			throw new ArrayIndexOutOfBoundsException();

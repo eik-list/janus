@@ -5,31 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.mslab.core.ByteArray;
-
 public class MathUtilTest {
-	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-	
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-	
-	@Before
-	public void setUp() throws Exception {
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-	}
 	
 	@Test
 	public void testBinomialCoefficientSumWith32() {
@@ -119,23 +97,6 @@ public class MathUtilTest {
 			MathUtil.computeBinomialCoefficientSum(n, k);
 			fail("Should throw error if n is zero");
 		} catch (IllegalArgumentException exception) { }
-	}
-	
-	@Test
-	public final void testComputeValuesWithSmallerHammingWeight() {
-		int maxWeight = 3;
-		int numBits = 64;
-		int numBytes = (int)Math.ceil((double)numBits / 8);
-		ByteArray[] result = MathUtil.computeValuesWithSmallerHammingWeight(maxWeight, numBits);
-		ByteArray value;
-		
-		long expectedNumResults = MathUtil.computeBinomialCoefficientSum(numBits, maxWeight) - 1;
-		assertEquals(expectedNumResults, result.length);
-		
-		for (int i = 0; i < result.length; i++) {
-			value = result[i];
-			assertFalse(MathUtil.hasHigherHammingWeightThan(value, maxWeight, numBytes));
-		}
 	}
 	
 	@Test

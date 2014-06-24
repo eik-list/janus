@@ -86,7 +86,7 @@ public class MatchingDifferentialRenderer extends AbstractDifferentialRenderer {
 			renderKeyInjection(round + 1);
 			currentStatePosition.x += stateRenderer.getBounds().x / 2 + offset;
 		}
-
+		
 		renderState(round);
 	}
 	

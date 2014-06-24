@@ -19,6 +19,7 @@ import de.mslab.diffbuilder.BitwiseDifferenceBuilder;
 import de.mslab.diffbuilder.BytewiseDifferenceBuilder;
 import de.mslab.diffbuilder.NibblewiseDifferenceBuilder;
 import de.mslab.rendering.BicliqueRenderer;
+import de.mslab.rendering.IBicliqueRenderer;
 import de.mslab.utils.BicliqueXMLSerializer;
 
 /**
@@ -33,7 +34,7 @@ public class BicliqueFinderApplication extends AbstractApplication {
 	private BicliqueFinder finder;
 	private BicliqueFinderContext finderContext;
 	private int maxBicliqueRounds;
-	private BicliqueRenderer renderer;
+	private IBicliqueRenderer renderer;
 	private BicliqueXMLSerializer serializer;
 	private String resultPath;
 	
@@ -67,7 +68,7 @@ public class BicliqueFinderApplication extends AbstractApplication {
 		initializeBicliqueFinder(cipherName, dimension, stopAfterFoundFirstBiclique, resultPath);
 		renderer = new BicliqueRenderer();
 		this.maxBicliqueRounds = maxBicliqueRounds;
-		logger.debugEnabled = debug;
+		logger.isDebugEnabled = debug;
 	}
 	
 	public void run() {
@@ -125,10 +126,11 @@ public class BicliqueFinderApplication extends AbstractApplication {
 		if (resultPath != null && resultPath.length() > 0) {
 			String lastChar = resultPath.substring(resultPath.length() - 1);
 			
-			if (lastChar != "/") {
+			if (!lastChar.equals("/")) {
 				resultPath += "/";
 			}
 		}
+		
 		this.resultPath = resultPath;
 	}
 	

@@ -3,7 +3,8 @@ package de.mslab.bicliquesearch;
 import de.mslab.ciphers.ThreeFish1024;
 import de.mslab.ciphers.helpers.BitwiseDifferentialComparator;
 import de.mslab.core.ByteArray;
-import de.mslab.diffbuilder.ThreeFishBitwiseDifferenceBuilder;
+import de.mslab.diffbuilder.BitwiseDifferenceBuilder;
+import de.mslab.diffbuilder.DifferenceBuilder;
 
 public class ThreeFish1024BicliqueFinderTest extends AbstractBicliqueFinderTest {
 
@@ -17,9 +18,8 @@ public class ThreeFish1024BicliqueFinderTest extends AbstractBicliqueFinderTest 
 		finderContext.stopAfterFoundFirstBiclique = true;
 		finderContext.dimension = 8;
 		
-		ThreeFishBitwiseDifferenceBuilder differenceBuilder = new ThreeFishBitwiseDifferenceBuilder();
+		DifferenceBuilder differenceBuilder = new BitwiseDifferenceBuilder();
 		finderContext.differenceBuilder = differenceBuilder;
-		differenceBuilder.setInjectedDifferenceWordIndex(15);
 		
 		finderContext.comparator = new BitwiseDifferentialComparator();
 		finderContext.logInterval = 1000;

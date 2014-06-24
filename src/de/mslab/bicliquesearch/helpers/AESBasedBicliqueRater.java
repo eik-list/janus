@@ -8,10 +8,10 @@ public class AESBasedBicliqueRater extends DefaultBicliqueRater {
 	
 	public int determineScoreForBiclique(Biclique biclique) {
 		return determineDataComplexity(biclique)
-			+ determineFoo(biclique.nablaDifferential);
+			+ determineIfActiveByteInFirstRow(biclique.nablaDifferential);
 	}
 	
-	private int determineFoo(Differential nablaDifferential) {
+	private int determineIfActiveByteInFirstRow(Differential nablaDifferential) {
 		if (hasActiveByteInFirstRow(nablaDifferential.keyDifferences.get(nablaDifferential.toRound).getDelta())) {
 			return -1000;
 		} else {

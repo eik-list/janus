@@ -56,6 +56,7 @@ public class BicliqueFinderContext {
 	public BicliqueRater bicliqueRater;
 	/**
 	 * A flag which will stop the search for biciques in the given round range, if one biclique was found.
+	 * <code>True</code> by default.
 	 */
 	public boolean stopAfterFoundFirstBiclique = true;
 	/**

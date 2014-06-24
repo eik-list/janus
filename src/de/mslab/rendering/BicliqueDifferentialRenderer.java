@@ -59,6 +59,12 @@ public class BicliqueDifferentialRenderer extends AbstractDifferentialRenderer {
 			currentStatePosition.y -= stateRenderer.getBounds().y / 2 + offset;
 		}
 		
+		if (round == cipher.getNumRounds()
+			&& cipher.hasKeyInjectionInRound(round + 1)) {
+			renderKeyInjection(round + 1);
+			currentStatePosition.y -= stateRenderer.getBounds().y / 2 + offset;
+		}
+		
 		renderState(round);
 	}
 	

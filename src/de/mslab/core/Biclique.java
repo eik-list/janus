@@ -55,7 +55,7 @@ public class Biclique implements Externalizable {
 			if (other == null) {
 				return false;
 			} else {
-				return cipherName == other.cipherName
+				return cipherName.equals(other.cipherName)
 					&& dimension == other.dimension
 					&& deltaDifferential.equals(other.deltaDifferential)
 					&& nablaDifferential.equals(other.nablaDifferential);
@@ -65,17 +65,21 @@ public class Biclique implements Externalizable {
 		}
 	}
 	
+	public int hashCode() {
+		assert false : "hashCode not needed";
+		return -1;
+	}
+	
 	/**
 	 * Returns a string of delta and nabla differential.
 	 */
 	public String toHexString() {
-		return "Delta: " + deltaDifferential.toHexString() + "\n"
-			+ "Nabla: " + nablaDifferential.toHexString();
+		return "Delta: \n" + deltaDifferential.toHexString() + "\n"
+			+ "Nabla: \n" + nablaDifferential.toHexString();
 	}
 	
 	public String toString() {
-		return "[Biclique\n" 
-			+ toHexString() + "]";
+		return "[Biclique\n" + toHexString() + "]";
 	}
 
 	public void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {

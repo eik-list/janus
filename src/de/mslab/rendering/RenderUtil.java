@@ -9,13 +9,19 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 
 public class RenderUtil {
-
+	
+	public static final int DEFAULT_ADDITION_SIZE = 10;
+	public static final int DEFAULT_XOR_RADIUS = 5;
+	
 	public static void renderAddition(PdfContentByte contentByte, Point position) {
 		renderAddition(contentByte, (float)position.x, (float)position.y);
 	}
 	
 	public static void renderAddition(PdfContentByte contentByte, float x, float y) {
-		int size = 10;
+		renderAddition(contentByte, x, y, DEFAULT_ADDITION_SIZE);
+	}
+	
+	public static void renderAddition(PdfContentByte contentByte, float x, float y, int size) {
 		int sizeHalf = size / 2;
 		contentByte.setColorFill(BaseColor.WHITE);
 		contentByte.rectangle(x - sizeHalf, y - sizeHalf, size, size);
@@ -23,9 +29,20 @@ public class RenderUtil {
 		renderLine(contentByte, x, y - sizeHalf, x, y + sizeHalf);
 	}
 	
-	public static void renderArrow(PdfContentByte contentByte, Point from, Point to) {
-		renderLine(contentByte, from, to);
-		renderLine(contentByte, from, to);
+	public static void renderArrowDown(PdfContentByte contentByte, Point position, int height, int width) {
+		Point first = position.getLocation();
+		first.x += width / 2;
+		first.y += height;
+
+		Point second = position.getLocation();
+		second.x -= width / 2;
+		second.y += height;
+		
+		contentByte.moveTo((float)position.x, (float)position.y);
+		contentByte.lineTo((float)first.x, (float)first.y);
+		contentByte.lineTo((float)second.x, (float)second.y);
+		contentByte.lineTo((float)position.x, (float)position.y);
+		contentByte.fillStroke();
 	}
 	
 	public static void renderLine(PdfContentByte contentByte, Point from, Point to) {
@@ -74,8 +91,7 @@ public class RenderUtil {
 	}
 	
 	public static void renderXOR(PdfContentByte contentByte, float x, float y) {
-		int radius = 5;
-		renderXOR(contentByte, x, y, radius);
+		renderXOR(contentByte, x, y, DEFAULT_XOR_RADIUS);
 	}
 	
 	public static void renderXOR(PdfContentByte contentByte, float x, float y, int radius) {

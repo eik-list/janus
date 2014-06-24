@@ -19,6 +19,7 @@ import de.mslab.core.Biclique;
 import de.mslab.core.ByteArray;
 import de.mslab.diffbuilder.BKRDifferentialBuilder;
 import de.mslab.rendering.BicliqueRenderer;
+import de.mslab.rendering.IBicliqueRenderer;
 import de.mslab.rendering.MatchingPhaseRenderer;
 import de.mslab.utils.BicliqueXMLSerializer;
 import de.mslab.utils.Logger;
@@ -35,7 +36,7 @@ public abstract class AbstractBKRMatcherTest {
 	protected MatchingFinder matchingDifferentialBuilder;
 	protected ComplexityCalculator complexityCalculator;
 	
-	protected BicliqueRenderer bicliqueRenderer;
+	protected IBicliqueRenderer bicliqueRenderer;
 	protected BicliqueXMLSerializer serializer;
 	protected MatchingPhaseRenderer matchingRenderer;
 	

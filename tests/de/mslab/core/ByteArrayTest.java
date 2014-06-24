@@ -1164,7 +1164,10 @@ public class ByteArrayTest {
 		}
 		
 		final ByteArray result = new ByteArray(array);
-		final int[][] splices = { {0, 7}, {6, 13}, {29, 127}, {15, 128}, {119, 128}, {0, 128}, {46, 46} };
+		final int[][] splices = { 
+			{0, 7}, {6, 13}, {29, 127}, {15, 128}, 
+			{119, 128}, {0, 128}, {46, 46} 
+		};
 		ByteArray actual;
 		int[] splice;
 		
@@ -1302,7 +1305,10 @@ public class ByteArrayTest {
 		}
 		
 		ByteArray result;
-		final int[][] ranges = { { 7, 18 }, {0, 36}, { 23, 99 }, {127, 127}, { 0, 127}, {0, 16}, {0, 0} };
+		final int[][] ranges = { 
+			{ 7, 18 }, {0, 36}, { 23, 99 }, {127, 127}, 
+			{ 0, 127}, {0, 16}, {0, 0} 
+		};
 		int[] range;
 		short[] newBytes;
 		

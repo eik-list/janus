@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
  * This class represents a differential, that is a sequence of state and key differences.
  * 
  */
-public class Differential implements Externalizable {
+public class Differential implements Externalizable,Cloneable {
 	
 	@XmlAttribute
 	/**
@@ -152,6 +152,11 @@ public class Differential implements Externalizable {
 		}
 	}
 	
+	public int hashCode() {
+		assert false : "hashCode not implemented";
+		return -1;
+	}
+	
 	/**
 	 * Returns the key difference for the given round.
 	 */
@@ -240,39 +245,35 @@ public class Differential implements Externalizable {
 	 */
 	public String toHexString() {
 		String result = "";
-		boolean hasLineBreak = false;
-		Difference difference;
+		boolean hasKeyWrappingAtTheEnd = (keyDifferences.size() == toRound + 2);
+		// For 0-th and (toRound + 1)-th element
 		
 		for (int round = fromRound - 1; round <= toRound; round++) {
-			difference = intermediateStateDifferences.get(round);
+			result += updateString(intermediateStateDifferences, round, " inter ");
+			result += updateString(keyDifferences, round, " key   ");
 			
-			if (difference != null) {
-				if (!hasLineBreak) {
-					hasLineBreak = true;
-					result += "\n";
-				}
-				result += "round " + round + " inter " + difference + "\n";
+			if (round < toRound) {
+				result += updateString(stateDifferences, round, " state ");
 			}
-			
-			difference = keyDifferences.get(round);
-			
-			if (difference != null) {
-				if (!hasLineBreak) {
-					hasLineBreak = true;
-					result += "\n";
-				}
-				result += "round " + round + " key   " + difference + "\n";
-			}
-			
-			difference = stateDifferences.get(round);
-			
-			if (difference != null) {
-				if (!hasLineBreak) {
-					hasLineBreak = true;
-					result += "\n";
-				}
-				result += "round " + round + " state " + difference + "\n";
-			}
+		}
+		
+		if (hasKeyWrappingAtTheEnd) {
+			result += updateString(intermediateStateDifferences, toRound + 1, " inter ");
+			result += updateString(keyDifferences, toRound + 1, " key   ");
+			result += updateString(stateDifferences, toRound, " state ");
+		} else {
+			result += updateString(stateDifferences, toRound, " state ");
+		}
+		
+		return result;
+	}
+	
+	private String updateString(Vector<Difference> differences, int round, String identifier) {
+		Difference difference = differences.get(round);
+		String result = "";
+		
+		if (difference != null) {
+			result = "round " + round + identifier + difference + "\n";
 		}
 		
 		return result;
